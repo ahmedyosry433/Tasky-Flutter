@@ -8,93 +8,85 @@ class TextStyles {
     color: ColorsManager.primryColor,
     fontSize: 14.sp,
     fontWeight: FontWeightHelper.semiBold,
-    fontFamily: 'Tajawal',
   );
   static TextStyle font16PrimaryBold = TextStyle(
     color: ColorsManager.primryColor,
     fontSize: 16.sp,
     fontWeight: FontWeightHelper.bold,
-    fontFamily: 'Tajawal',
   );
   static TextStyle font12PrimaryBold = TextStyle(
     color: ColorsManager.primryColor,
     fontSize: 12.sp,
     fontWeight: FontWeightHelper.bold,
-    fontFamily: 'Tajawal',
   );
   static TextStyle font10PrimaryRegular = TextStyle(
     color: ColorsManager.primryColor,
     fontSize: 10.sp,
     fontWeight: FontWeightHelper.regular,
-    fontFamily: 'Tajawal',
   );
   static TextStyle font8PrimaryRegular = TextStyle(
     color: ColorsManager.primryColor,
     fontSize: 8.sp,
     fontWeight: FontWeightHelper.regular,
-    fontFamily: 'Tajawal',
   );
   static TextStyle font10PrimaryBold = TextStyle(
     color: ColorsManager.primryColor,
     fontSize: 10.sp,
     fontWeight: FontWeightHelper.bold,
-    fontFamily: 'Tajawal',
   );
   static TextStyle font6PrimaryBold = TextStyle(
     color: ColorsManager.primryColor,
     fontSize: 6.sp,
     fontWeight: FontWeightHelper.bold,
-    fontFamily: 'Tajawal',
   );
 
-  static TextStyle font6MidLightPrimaryBold = TextStyle(
-    color: ColorsManager.midLightPrimryColor,
-    fontSize: 6.sp,
-    fontWeight: FontWeightHelper.bold,
-    fontFamily: 'Tajawal',
-  );
   static TextStyle font11LightPrimaryBold = TextStyle(
     color: ColorsManager.lightPrimryColor,
     fontSize: 11.sp,
     fontWeight: FontWeightHelper.bold,
-    fontFamily: 'Tajawal',
   );
   static TextStyle font10LightPrimaryRegular = TextStyle(
     color: ColorsManager.lightPrimryColor,
     fontSize: 10.sp,
     fontWeight: FontWeightHelper.regular,
-    fontFamily: 'Tajawal',
   );
-  static TextStyle font9MidLightPrimryColorBold = TextStyle(
-    color: ColorsManager.midLightPrimryColor,
-    fontSize: 9.sp,
+  //Black Colors
+  static TextStyle font10BlackRegular = TextStyle(
+    color: Colors.black,
+    fontSize: 10.sp,
+    fontWeight: FontWeightHelper.regular,
+  );
+  static TextStyle font24BlackBold = TextStyle(
+    color: Colors.black,
+    fontSize: 24.sp,
     fontWeight: FontWeightHelper.bold,
-    fontFamily: 'Tajawal',
   );
+  //Gray Colors
 
+  static TextStyle font14GrayRegular = TextStyle(
+    color: ColorsManager.grayColor,
+    fontSize: 14.sp,
+    fontWeight: FontWeightHelper.regular,
+  );
   // WHITE  COLORS
   static TextStyle font14WhiteSemiBold = TextStyle(
     color: ColorsManager.whiteColor,
     fontSize: 14.sp,
     fontWeight: FontWeightHelper.semiBold,
-    fontFamily: 'Tajawal',
   );
   static TextStyle font14WhiteRegular = TextStyle(
     color: ColorsManager.whiteColor,
     fontSize: 14.sp,
     fontWeight: FontWeightHelper.regular,
-    fontFamily: 'Tajawal',
   );
   static TextStyle font12WhiteBold = TextStyle(
     color: ColorsManager.whiteColor,
     fontSize: 12.sp,
     fontWeight: FontWeightHelper.bold,
-    fontFamily: 'Tajawal',
   );
   static TextStyle font10WhiteBold = TextStyle(
     color: ColorsManager.whiteColor,
     fontSize: 10.sp,
     fontWeight: FontWeightHelper.bold,
-    fontFamily: 'Tajawal',
   );
 }
