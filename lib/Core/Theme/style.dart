@@ -95,3 +95,38 @@ class TextStyles {
     fontWeight: FontWeightHelper.bold,
   );
 }
+
+class DecorationStyle {
+  static InputDecoration inputDecoration = InputDecoration(
+    isDense: true,
+    contentPadding: EdgeInsets.symmetric(horizontal: 15.w, vertical: 10.h),
+    focusedBorder: const OutlineInputBorder(
+      borderSide: BorderSide(
+        color: ColorsManager.primryColor,
+        width: 1,
+      ),
+    ),
+    enabledBorder: OutlineInputBorder(
+      borderSide: const BorderSide(
+        color: ColorsManager.grayColor,
+        width: 0.5,
+      ),
+      borderRadius: BorderRadius.circular(5.0),
+    ),
+    errorBorder: const OutlineInputBorder(
+      borderSide: BorderSide(
+        color: Colors.red,
+        width: 1,
+      ),
+    ),
+    focusedErrorBorder: const OutlineInputBorder(
+      borderSide: BorderSide(
+        color: Colors.red,
+        width: 1.3,
+      ),
+    ),
+    hintStyle: TextStyles.font14GrayRegular,
+    filled: true,
+    fillColor: Colors.white,
+  );
+}

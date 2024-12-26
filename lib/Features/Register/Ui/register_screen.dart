@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:intl_phone_field/intl_phone_field.dart';
+import 'package:tasky/Core/Helper/extensions.dart';
 import 'package:tasky/Core/Helper/spacing.dart';
+import 'package:tasky/Core/Router/routes.dart';
 import 'package:tasky/Core/Theme/colors.dart';
 import 'package:tasky/Core/Theme/style.dart';
 import 'package:tasky/Core/Widgets/app_text_button.dart';
@@ -39,18 +42,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 fit: BoxFit.fitWidth,
               ),
               Padding(
-                padding: const EdgeInsets.all(24.0),
+                padding: EdgeInsets.symmetric(horizontal: 20.w),
                 child: Form(
                   key: _formKey,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                      Text(
                         'Signup',
-                        style: TextStyle(
-                          fontSize: 32,
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style: TextStyles.font24BlackBold,
                       ),
                       AppTextFormField(
                         hintText: 'Name...',
@@ -63,6 +63,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         keyboardType: TextInputType.text,
                       ),
                       verticalSpace(14),
+                      IntlPhoneField(
+                        decoration: DecorationStyle.inputDecoration.copyWith(
+                          hintText: '123 456-7890',
+                        ),
+                        initialCountryCode: 'EG',
+                        onChanged: (phone) {
+                          // print(phone.completeNumber);
+                        },
+                      ),
                       AppTextFormField(
                           hintText: "Years of experience...",
                           validator: (value) {
@@ -116,7 +125,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       AppTextButton(
                           buttonText: "Signup",
                           textStyle: TextStyles.font14WhiteSemiBold,
-                          onPressed: () {}),
+                          onPressed: () {
+                            context.pushNamed(Routes.loginScreen);
+                          }),
                       verticalSpace(14),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -125,10 +136,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               style: TextStyles.font14GrayRegular),
                           GestureDetector(
                             onTap: () {
-                              // Handle navigation to sign in screen
+                              context.pushNamed(Routes.loginScreen);
                             },
                             child: Text(
-                              'Sign up',
+                              'Sign in',
                               style: TextStyles.font12PrimaryBold,
                             ),
                           ),
@@ -147,36 +158,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   Widget _buildDropdown() {
     return DropdownButtonFormField<String>(
-      decoration: InputDecoration(
-        isDense: true,
-        focusedBorder: const OutlineInputBorder(
-          borderSide: BorderSide(
-            color: ColorsManager.primryColor,
-            width: 1,
-          ),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderSide: const BorderSide(
-            color: ColorsManager.grayColor,
-            width: 0.5,
-          ),
-          borderRadius: BorderRadius.circular(5.0),
-        ),
-        errorBorder: const OutlineInputBorder(
-          borderSide: BorderSide(
-            color: Colors.red,
-            width: 1,
-          ),
-        ),
-        focusedErrorBorder: const OutlineInputBorder(
-          borderSide: BorderSide(
-            color: Colors.red,
-            width: 1.3,
-          ),
-        ),
-        hintStyle: TextStyles.font14GrayRegular,
-        filled: true,
-        fillColor: Colors.white,
+      decoration: DecorationStyle.inputDecoration.copyWith(
+        hintText: 'Experience Level',
       ),
       value: selectedExperienceLevel,
       items: experienceLevels.map((String level) {

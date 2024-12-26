@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tasky/Core/Router/routes.dart';
+import 'package:tasky/Features/Login/Ui/login_screen.dart';
 import 'package:tasky/Features/Onboarding/Ui/onboarding_screen.dart';
 import 'package:tasky/Features/Register/Ui/register_screen.dart';
 
@@ -13,6 +14,10 @@ class AppRouter {
       case Routes.registerScreen:
         return MaterialPageRoute(
           builder: (_) => const RegisterScreen(),
+        );
+      case Routes.loginScreen:
+        return MaterialPageRoute(
+          builder: (_) => const LoginScreen(),
         );
 
       default:
