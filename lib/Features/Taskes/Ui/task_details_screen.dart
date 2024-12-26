@@ -96,19 +96,16 @@ class TaskDetailsScreen extends StatelessWidget {
           ],
         ),
       ],
-      leading: IconButton(
-        icon: Row(
-          children: [
-            IconButton(
-              onPressed: () {
-                context.pop();
-              },
-              icon: Image.asset('assets/image/arrow_to_left.png'),
-            ),
-            Text('Task Details', style: TextStyles.font18BlackBold),
-          ],
-        ),
-        onPressed: () => Navigator.pop(context),
+      leading: Row(
+        children: [
+          IconButton(
+            onPressed: () {
+              context.pop();
+            },
+            icon: Image.asset('assets/image/arrow_to_left.png'),
+          ),
+          Text('Task Details', style: TextStyles.font18BlackBold),
+        ],
       ),
       leadingWidth: 200.w,
     );
