@@ -133,6 +133,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   FloatingActionButton(
+                    heroTag: 'qr',
                     onPressed: () {},
                     backgroundColor: ColorsManager.lightPrimryColor,
                     mini: true,
@@ -143,6 +144,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
                   ),
                   const SizedBox(height: 8),
                   FloatingActionButton(
+                    heroTag: 'add',
                     onPressed: () {},
                     backgroundColor: ColorsManager.primryColor,
                     child: const Icon(
