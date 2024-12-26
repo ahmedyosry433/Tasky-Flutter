@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:tasky/Core/Helper/extensions.dart';
 import 'package:tasky/Core/Helper/spacing.dart';
+import 'package:tasky/Core/Router/routes.dart';
 import 'package:tasky/Core/Theme/style.dart';
 import 'package:tasky/Core/Widgets/app_text_button.dart';
 
@@ -36,7 +37,7 @@ class OnboardingScreen extends StatelessWidget {
                       buttonText: "Let’s Start",
                       textStyle: TextStyles.font14WhiteSemiBold,
                       onPressed: () {
-                        // context.pushNamed('/login');
+                        context.pushNamed(Routes.registerScreen);
                       })
                 ],
               ),
