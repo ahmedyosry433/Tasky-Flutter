@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:tasky/Core/Helper/extensions.dart';
 import 'package:tasky/Core/Helper/spacing.dart';
+import 'package:tasky/Core/Router/routes.dart';
 import 'package:tasky/Core/Theme/colors.dart';
 import 'package:tasky/Core/Theme/style.dart';
 
@@ -58,31 +60,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // App Bar
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Logo',
-                        style: TextStyles.font24BlackBold,
-                      ),
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.account_circle_outlined,
-                            color: Colors.black,
-                            size: 25.r,
-                          ),
-                          horizontalSpace(16),
-                          Icon(Icons.logout,
-                              color: ColorsManager.primryColor, size: 25.r),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-
+                _buildAppbar(),
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 16.w),
                   child: Text(
@@ -139,7 +117,9 @@ class _TaskListScreenState extends State<TaskListScreen> {
                     itemCount: tasks.length,
                     itemBuilder: (context, index) {
                       final task = tasks[index];
-                      return _buildTaskCard(task);
+                      return _buildTaskCard(task, () {
+                        context.pushNamed(Routes.taskDetailsScreen);
+                      });
                     },
                   ),
                 ),
@@ -153,18 +133,22 @@ class _TaskListScreenState extends State<TaskListScreen> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   FloatingActionButton(
-                    heroTag: 'qr',
                     onPressed: () {},
-                    backgroundColor: Colors.grey.shade200,
+                    backgroundColor: ColorsManager.lightPrimryColor,
                     mini: true,
-                    child: const Icon(Icons.qr_code, color: Colors.purple),
+                    child: const Icon(
+                      Icons.qr_code,
+                      color: ColorsManager.primryColor,
+                    ),
                   ),
                   const SizedBox(height: 8),
                   FloatingActionButton(
-                    heroTag: 'add',
                     onPressed: () {},
-                    backgroundColor: Colors.purple,
-                    child: const Icon(Icons.add),
+                    backgroundColor: ColorsManager.primryColor,
+                    child: const Icon(
+                      Icons.add,
+                      color: ColorsManager.whiteColor,
+                    ),
                   ),
                 ],
               ),
@@ -175,7 +159,43 @@ class _TaskListScreenState extends State<TaskListScreen> {
     );
   }
 
-  Widget _buildTaskCard(Map<String, dynamic> task) {
+  Widget _buildAppbar() {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            'Logo',
+            style: TextStyles.font24BlackBold,
+          ),
+          Row(
+            children: [
+              IconButton(
+                  onPressed: () {
+                    context.pushNamed(Routes.profileScreen);
+                  },
+                  icon: Icon(
+                    Icons.account_circle_outlined,
+                    color: Colors.black,
+                    size: 25.r,
+                  )),
+              horizontalSpace(16),
+              IconButton(
+                onPressed: () {
+                  context.pushNamed(Routes.loginScreen);
+                },
+                icon: Icon(Icons.logout,
+                    color: ColorsManager.primryColor, size: 25.r),
+              )
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTaskCard(Map<String, dynamic> task, void Function()? onTap) {
     Color statusColor;
     switch (task['status']) {
       case 'Waiting':
@@ -197,7 +217,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
         priorityColor = Colors.orange;
         break;
       case 'medium':
-        priorityColor = Colors.purple;
+        priorityColor = ColorsManager.primryColor;
         break;
       case 'low':
         priorityColor = Colors.blue;
@@ -206,84 +226,90 @@ class _TaskListScreenState extends State<TaskListScreen> {
         priorityColor = Colors.grey;
     }
 
-    return Card(
-      color: Colors.white,
-      elevation: 0,
-      margin: EdgeInsets.only(bottom: 16.h),
-      child: Padding(
-        padding: EdgeInsets.all(13.r),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Image.asset(
-              'assets/image/onboarging_img.png',
-              width: 50.w,
-              height: 50.h,
-            ),
-            horizontalSpace(10),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        child: Text(
-                          task['title'],
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                          ),
-                        ),
-                      ),
-                      Container(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 8.w,
-                          vertical: 4.h,
-                        ),
-                        decoration: BoxDecoration(
-                          color: statusColor.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(12.r),
-                        ),
-                        child: Text(
-                          task['status'],
-                          style: TextStyle(color: statusColor),
-                        ),
-                      ),
-                      horizontalSpace(6),
-                      const Icon(Icons.more_vert),
-                    ],
-                  ),
-                  verticalSpace(7),
-                  Text(
-                    task['description'],
-                    style: TextStyles.font14GrayRegular,
-                  ),
-                  verticalSpace(7),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        children: [
-                          Icon(Icons.flag, size: 16, color: priorityColor),
-                          horizontalSpace(4),
-                          Text(
-                            task['priority'],
-                            style: TextStyle(color: priorityColor),
-                          ),
-                        ],
-                      ),
-                      Text(
-                        task['date'],
-                        style: TextStyles.font14GrayRegular,
-                      ),
-                    ],
-                  ),
-                ],
+    return GestureDetector(
+      onTap: () {
+        context.pushNamed(Routes.taskDetailsScreen);
+      },
+      child: Card(
+        color: Colors.white,
+        elevation: 0,
+        margin: EdgeInsets.only(bottom: 16.h),
+        child: Padding(
+          padding: EdgeInsets.all(13.r),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Image.asset(
+                'assets/image/task_img.png',
+                width: 50.w,
+                height: 50.h,
               ),
-            ),
-          ],
+              horizontalSpace(10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            task['title'],
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
+                        ),
+                        Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 8.w,
+                            vertical: 4.h,
+                          ),
+                          decoration: BoxDecoration(
+                            color: statusColor.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(12.r),
+                          ),
+                          child: Text(
+                            task['status'],
+                            style: TextStyle(color: statusColor),
+                          ),
+                        ),
+                        horizontalSpace(6),
+                        const Icon(Icons.more_vert),
+                      ],
+                    ),
+                    verticalSpace(7),
+                    Text(
+                      task['description'],
+                      style: TextStyles.font14GrayRegular,
+                    ),
+                    verticalSpace(7),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          children: [
+                            Icon(Icons.flag_outlined,
+                                size: 16, color: priorityColor),
+                            horizontalSpace(4),
+                            Text(
+                              task['priority'],
+                              style: TextStyle(color: priorityColor),
+                            ),
+                          ],
+                        ),
+                        Text(
+                          task['date'],
+                          style: TextStyles.font14GrayRegular,
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
