@@ -69,31 +69,34 @@ class TaskDetailsScreen extends StatelessWidget {
       backgroundColor: Colors.white,
       elevation: 0,
       actions: [
-        PopupMenuButton(
-          position: PopupMenuPosition.under,
-          color: Colors.white,
-          child: Icon(
-            Icons.more_vert,
-            color: Colors.black,
-            size: 24.r,
+        Padding(
+          padding: EdgeInsets.only(right: 10.w),
+          child: PopupMenuButton(
+            position: PopupMenuPosition.under,
+            color: Colors.white,
+            child: Icon(
+              Icons.more_vert,
+              color: Colors.black,
+              size: 24.r,
+            ),
+            onSelected: (value) {
+              if (value == 'edit') {
+                // Navigate to edit screen
+              } else {
+                // Show delete confirmation dialog
+              }
+            },
+            itemBuilder: (context) => [
+              const PopupMenuItem(
+                value: 'edit',
+                child: Text('Edit'),
+              ),
+              const PopupMenuItem(
+                value: 'delete',
+                child: Text('Delete', style: TextStyle(color: Colors.red)),
+              ),
+            ],
           ),
-          onSelected: (value) {
-            if (value == 'edit') {
-              // Navigate to edit screen
-            } else {
-              // Show delete confirmation dialog
-            }
-          },
-          itemBuilder: (context) => [
-            const PopupMenuItem(
-              value: 'edit',
-              child: Text('Edit'),
-            ),
-            const PopupMenuItem(
-              value: 'delete',
-              child: Text('Delete', style: TextStyle(color: Colors.red)),
-            ),
-          ],
         ),
       ],
       leading: Row(

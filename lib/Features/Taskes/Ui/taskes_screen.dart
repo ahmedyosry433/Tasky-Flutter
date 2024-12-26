@@ -127,12 +127,15 @@ class _TaskListScreenState extends State<TaskListScreen> {
             ),
             // Floating Action Buttons
             Positioned(
-              bottom: 16,
-              right: 16,
+              bottom: 16.h,
+              right: 16.w,
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   FloatingActionButton(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(50),
+                    ),
                     heroTag: 'qr',
                     onPressed: () {},
                     backgroundColor: ColorsManager.lightPrimryColor,
@@ -142,10 +145,15 @@ class _TaskListScreenState extends State<TaskListScreen> {
                       color: ColorsManager.primryColor,
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  verticalSpace(8),
                   FloatingActionButton(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(50),
+                    ),
                     heroTag: 'add',
-                    onPressed: () {},
+                    onPressed: () {
+                      context.pushNamed(Routes.taskCreationScreen);
+                    },
                     backgroundColor: ColorsManager.primryColor,
                     child: const Icon(
                       Icons.add,
@@ -237,7 +245,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
         elevation: 0,
         margin: EdgeInsets.only(bottom: 16.h),
         child: Padding(
-          padding: EdgeInsets.all(13.r),
+          padding: EdgeInsets.all(10.r),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -255,13 +263,8 @@ class _TaskListScreenState extends State<TaskListScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Expanded(
-                          child: Text(
-                            task['title'],
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                            ),
-                          ),
+                          child: Text(task['title'],
+                              style: TextStyles.font14BlackBold),
                         ),
                         Container(
                           padding: EdgeInsets.symmetric(
@@ -277,8 +280,9 @@ class _TaskListScreenState extends State<TaskListScreen> {
                             style: TextStyle(color: statusColor),
                           ),
                         ),
-                        horizontalSpace(6),
-                        const Icon(Icons.more_vert),
+                        horizontalSpace(2),
+                        GestureDetector(
+                            onTap: () {}, child: const Icon(Icons.more_vert)),
                       ],
                     ),
                     verticalSpace(7),
