@@ -3,7 +3,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:tasky/Core/Router/app_router.dart';
 import 'package:tasky/Core/Router/routes.dart';
 
-
 class TaskyApp extends StatelessWidget {
   final AppRouter appRouter;
   const TaskyApp({super.key, required this.appRouter});
@@ -18,9 +17,8 @@ class TaskyApp extends StatelessWidget {
         theme: ThemeData(
           scaffoldBackgroundColor: Colors.white,
         ),
-        
         debugShowCheckedModeBanner: false,
-        initialRoute: Routes.loginScreen,
+        initialRoute: Routes.taskesScreen,
         onGenerateRoute: appRouter.onGenerateRoute,
       ),
     );
