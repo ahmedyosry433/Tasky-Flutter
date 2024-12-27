@@ -24,6 +24,7 @@ class AppTextFormField extends StatefulWidget {
   final bool? readOnly;
   final bool? enable;
   Function(String)? onChanged;
+  final int? maxLines;
 
   AppTextFormField({
     super.key,
@@ -44,6 +45,7 @@ class AppTextFormField extends StatefulWidget {
     this.readOnly,
     this.enable,
     this.onChanged,
+    this.maxLines,
   });
 
   @override
@@ -68,6 +70,7 @@ class _AppTextFormFieldState extends State<AppTextFormField> {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      maxLines: widget.maxLines,
       onChanged: widget.onChanged,
       autovalidateMode: AutovalidateMode.onUserInteraction,
       enabled: widget.enable,

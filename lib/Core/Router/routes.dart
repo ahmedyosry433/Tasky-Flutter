@@ -5,4 +5,5 @@ class Routes {
   static const String taskesScreen = 'taskesScreen';
   static const String profileScreen = 'profileScreen';
   static const String taskDetailsScreen = 'taskDetailsScreen';
+  static const String taskCreationScreen = 'taskCreationScreen';
 }

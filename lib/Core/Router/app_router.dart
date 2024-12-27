@@ -4,6 +4,7 @@ import 'package:tasky/Features/Login/Ui/login_screen.dart';
 import 'package:tasky/Features/Onboarding/Ui/onboarding_screen.dart';
 import 'package:tasky/Features/Profile/Ui/profile_screen.dart';
 import 'package:tasky/Features/Register/Ui/register_screen.dart';
+import 'package:tasky/Features/Taskes/Ui/add_new_task_screen.dart';
 import 'package:tasky/Features/Taskes/Ui/task_details_screen.dart';
 import 'package:tasky/Features/Taskes/Ui/taskes_screen.dart';
 
@@ -33,6 +34,10 @@ class AppRouter {
       case Routes.taskDetailsScreen:
         return MaterialPageRoute(
           builder: (_) => const TaskDetailsScreen(),
+        );
+      case Routes.taskCreationScreen:
+        return MaterialPageRoute(
+          builder: (_) => const TaskCreationScreen(),
         );
 
       default:
