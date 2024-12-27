@@ -1,6 +1,12 @@
+// ignore_for_file: unused_element, unused_field, use_build_context_synchronously
+
+import 'dart:io';
+
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:tasky/Core/Helper/extensions.dart';
 import 'package:tasky/Core/Helper/spacing.dart';
 import 'package:tasky/Core/Theme/style.dart';
@@ -19,21 +25,69 @@ class TaskCreationScreen extends StatefulWidget {
 
 class _TaskCreationScreenState extends State<TaskCreationScreen> {
   TaskPriority _priority = TaskPriority.medium;
-
+  final ImagePicker _picker = ImagePicker();
+  File? _selectedImage;
   DateTime? _selectedDate;
 
   Future<void> _pickDate(BuildContext context) async {
     final DateTime? pickedDate = await showDatePicker(
       context: context,
       initialDate: _selectedDate ?? DateTime.now(),
-      firstDate: DateTime(2000), // Earliest date that can be selected
-      lastDate: DateTime(2100), // Latest date that can be selected
+      firstDate: DateTime(2023),
+      lastDate: DateTime(2100),
     );
 
     if (pickedDate != null && pickedDate != _selectedDate) {
       setState(() {
         _selectedDate = pickedDate;
       });
+    }
+  }
+
+  Future<void> _pickImage(BuildContext context) async {
+    try {
+      final XFile? pickedFile = await showDialog<XFile>(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text("Choose Image Source"),
+            actions: [
+              TextButton.icon(
+                icon: const Icon(Icons.camera_alt),
+                label: const Text("Camera"),
+                onPressed: () async {
+                  final picked =
+                      await _picker.pickImage(source: ImageSource.camera);
+                  context.pop();
+                  setState(() {
+                    _selectedImage = File(picked!.path);
+                  });
+                },
+              ),
+              TextButton.icon(
+                icon: const Icon(Icons.photo_library),
+                label: const Text("Gallery"),
+                onPressed: () async {
+                  final picked =
+                      await _picker.pickImage(source: ImageSource.gallery);
+                  context.pop();
+                  setState(() {
+                    _selectedImage = File(picked!.path);
+                  });
+                },
+              ),
+            ],
+          );
+        },
+      );
+
+      if (pickedFile != null) {
+        setState(() {
+          _selectedImage = File(pickedFile.path);
+        });
+      }
+    } catch (e) {
+      print("________________From Image Pick __$e");
     }
   }
 
@@ -76,9 +130,30 @@ class _TaskCreationScreenState extends State<TaskCreationScreen> {
     );
   }
 
+  Widget _buildAppbar(BuildContext context) {
+    return AppBar(
+      backgroundColor: Colors.white,
+      elevation: 0,
+      leading: Row(
+        children: [
+          IconButton(
+            onPressed: () {
+              context.pop();
+            },
+            icon: Image.asset('assets/image/arrow_to_left.png'),
+          ),
+          Text('Add New Task', style: TextStyles.font18BlackBold),
+        ],
+      ),
+      leadingWidth: 200.w,
+    );
+  }
+
   Widget _buildImagePicker() {
     return GestureDetector(
-      onTap: () {},
+      onTap: () {
+        _pickImage(context);
+      },
       child: DottedBorder(
           color: ColorsManager.primryColor, // Border color
           strokeWidth: 1, // Border width
@@ -121,7 +196,9 @@ class _TaskCreationScreenState extends State<TaskCreationScreen> {
       ),
       readOnly: true,
       controller: TextEditingController(
-          text: _selectedDate == null ? '' : _selectedDate.toString()),
+          text: _selectedDate == null
+              ? ''
+              : DateFormat('d / M / yyyy').format(_selectedDate!).toString()),
     );
   }
 
@@ -172,25 +249,6 @@ class _TaskCreationScreenState extends State<TaskCreationScreen> {
           },
         ),
       ),
-    );
-  }
-
-  Widget _buildAppbar(BuildContext context) {
-    return AppBar(
-      backgroundColor: Colors.white,
-      elevation: 0,
-      leading: Row(
-        children: [
-          IconButton(
-            onPressed: () {
-              context.pop();
-            },
-            icon: Image.asset('assets/image/arrow_to_left.png'),
-          ),
-          Text('Add New Task', style: TextStyles.font18BlackBold),
-        ],
-      ),
-      leadingWidth: 200.w,
     );
   }
 }
