@@ -10,6 +10,12 @@
 analyzer:
   errors:
     unused_element: ignore
+    depend_on_referenced_packages: ignore
+    prefer_final_fields: ignore
+    unnecessary_import: ignore
+    file_names: ignore
+    unused_field: ignore
+    non_constant_identifier_names: ignore
 include: package:flutter_lints/flutter.yaml
 
 linter:

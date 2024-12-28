@@ -1,3 +1,5 @@
+// ignore_for_file: unnecessary_import
+
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 // ignore: depend_on_referenced_packages

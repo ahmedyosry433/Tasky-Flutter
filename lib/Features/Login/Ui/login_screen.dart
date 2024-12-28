@@ -136,10 +136,10 @@ class _LoginScreenState extends State<LoginScreen> {
           if (state is LoginLoading) {
             const Center(child: CircularProgressIndicator());
           }
-          if (state is LoginSuccess) {
+          else if (state is LoginSuccess) {
             context.pushNamed(Routes.taskesScreen);
           }
-          if (state is LoginError) {
+          else if (state is LoginError) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(

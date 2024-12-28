@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:tasky/Core/Helper/extensions.dart';
 import 'package:tasky/Core/Helper/spacing.dart';
 import 'package:tasky/Core/Router/routes.dart';
 import 'package:tasky/Core/Theme/colors.dart';
 import 'package:tasky/Core/Theme/style.dart';
+import 'package:tasky/Features/Taskes/Logic/cubit/task_cubit.dart';
 
 class TaskListScreen extends StatefulWidget {
   const TaskListScreen({super.key});
@@ -163,6 +165,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
                 ],
               ),
             ),
+            _buildBlocLisener(context),
           ],
         ),
       ),
@@ -193,11 +196,11 @@ class _TaskListScreenState extends State<TaskListScreen> {
               horizontalSpace(16),
               IconButton(
                 onPressed: () {
-                  context.pushNamed(Routes.loginScreen);
+                  BlocProvider.of<TaskCubit>(context).logoutCubit();
                 },
                 icon: Icon(Icons.logout,
                     color: ColorsManager.primryColor, size: 25.r),
-              )
+              ),
             ],
           ),
         ],
@@ -319,5 +322,32 @@ class _TaskListScreenState extends State<TaskListScreen> {
         ),
       ),
     );
+  }
+
+  Widget _buildBlocLisener(BuildContext context) {
+    return BlocListener<TaskCubit, TaskState>(
+        listenWhen: (previous, current) {
+          return previous != current;
+        },
+        listener: (context, state) {
+          if (state is LogoutLoading) {
+            const Center(child: CircularProgressIndicator());
+          }
+          if (state is LogoutSuccess) {
+            context.pushReplacementNamed(Routes.loginScreen);
+          }
+          if (state is LogoutError) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  state.errorMessage,
+                  style: TextStyles.font14WhiteSemiBold,
+                ),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
+        },
+        child: const SizedBox.shrink());
   }
 }

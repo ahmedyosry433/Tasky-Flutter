@@ -9,6 +9,7 @@ import 'package:tasky/Features/Profile/Logic/cubit/profile_cubit.dart';
 import 'package:tasky/Features/Profile/Ui/profile_screen.dart';
 import 'package:tasky/Features/Register/Logic/cubit/register_cubit.dart';
 import 'package:tasky/Features/Register/Ui/register_screen.dart';
+import 'package:tasky/Features/Taskes/Logic/cubit/task_cubit.dart';
 import 'package:tasky/Features/Taskes/Ui/add_new_task_screen.dart';
 import 'package:tasky/Features/Taskes/Ui/task_details_screen.dart';
 import 'package:tasky/Features/Taskes/Ui/taskes_screen.dart';
@@ -36,7 +37,10 @@ class AppRouter {
         );
       case Routes.taskesScreen:
         return MaterialPageRoute(
-          builder: (_) => const TaskListScreen(),
+          builder: (_) => BlocProvider(
+            create: (context) => getIt<TaskCubit>(),
+            child: const TaskListScreen(),
+          ),
         );
       case Routes.profileScreen:
         return MaterialPageRoute(
@@ -45,6 +49,7 @@ class AppRouter {
             child: const ProfileScreen(),
           ),
         );
+
       case Routes.taskDetailsScreen:
         return MaterialPageRoute(
           builder: (_) => const TaskDetailsScreen(),

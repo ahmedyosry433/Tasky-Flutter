@@ -53,4 +53,18 @@ class ApiService {
             ));
     return response.data;
   }
+
+  Future logout({required String token}) async {
+    var headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    };
+    Response response =
+        await _dio.request(ApiConstants.apiBaseUrl + ApiConstants.logoutrUrl,
+            options: Options(
+              headers: headers,
+              method: 'POST',
+            ));
+    return response.data;
+  }
 }

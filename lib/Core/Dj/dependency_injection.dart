@@ -8,6 +8,8 @@ import 'package:tasky/Features/Profile/Data/Repo/profile_repo.dart';
 import 'package:tasky/Features/Profile/Logic/cubit/profile_cubit.dart';
 import 'package:tasky/Features/Register/Data/Repo/register_repo.dart';
 import 'package:tasky/Features/Register/Logic/cubit/register_cubit.dart';
+import 'package:tasky/Features/Taskes/Data/Repo/task_repo.dart';
+import 'package:tasky/Features/Taskes/Logic/cubit/task_cubit.dart';
 
 final getIt = GetIt.instance;
 Future<void> setupGetit() async {
@@ -23,4 +25,7 @@ Future<void> setupGetit() async {
   // Profile
   getIt.registerLazySingleton(() => ProfileRepo(getIt()));
   getIt.registerFactory<ProfileCubit>(() => ProfileCubit(getIt()));
+  // Task
+  getIt.registerLazySingleton(() => TaskRepo(getIt()));
+  getIt.registerFactory<TaskCubit>(() => TaskCubit(getIt()));
 }
