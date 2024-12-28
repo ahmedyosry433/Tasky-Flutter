@@ -42,7 +42,9 @@ class RegisterCubit extends Cubit<RegisterState> {
       await SharedPreferencesHelper.setValueForKey(
           'token', res['access_token']);
       emit(RegisterSuccess());
+      print("Error: ____________${phoneController.text}");
     } catch (e) {
+      print("Error: ____________${phoneController.text}");
       emit(RegisterError(errorMessage: e.toString()));
     }
   }

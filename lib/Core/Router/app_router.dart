@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tasky/Core/Dj/dependency_injection.dart';
 import 'package:tasky/Core/Router/routes.dart';
+import 'package:tasky/Features/Login/Logic/cubit/login_cubit.dart';
 import 'package:tasky/Features/Login/Ui/login_screen.dart';
 import 'package:tasky/Features/Onboarding/Ui/onboarding_screen.dart';
 import 'package:tasky/Features/Profile/Ui/profile_screen.dart';
@@ -27,7 +28,10 @@ class AppRouter {
         );
       case Routes.loginScreen:
         return MaterialPageRoute(
-          builder: (_) => const LoginScreen(),
+          builder: (_) => BlocProvider(
+            create: (context) => getIt<LoginCubit>(),
+            child: const LoginScreen(),
+          ),
         );
       case Routes.taskesScreen:
         return MaterialPageRoute(

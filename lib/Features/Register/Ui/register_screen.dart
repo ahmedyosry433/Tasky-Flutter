@@ -60,14 +60,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                       verticalSpace(14),
                       IntlPhoneField(
-                        controller: BlocProvider.of<RegisterCubit>(context)
-                            .phoneController,
                         decoration: DecorationStyle.inputDecoration.copyWith(
                           hintText: '123 456-7890',
                         ),
                         initialCountryCode: 'EG',
                         onChanged: (phone) {
-                          // print(phone.completeNumber);
+                          BlocProvider.of<RegisterCubit>(context)
+                              .phoneController
+                              .text = phone.completeNumber;
                         },
                       ),
                       AppTextFormField(

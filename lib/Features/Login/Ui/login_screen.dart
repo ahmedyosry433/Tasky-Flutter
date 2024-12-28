@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:tasky/Core/Helper/extensions.dart';
@@ -7,6 +8,7 @@ import 'package:tasky/Core/Router/routes.dart';
 import 'package:tasky/Core/Theme/style.dart';
 import 'package:tasky/Core/Widgets/app_text_button.dart';
 import 'package:tasky/Core/Widgets/app_text_form_field.dart';
+import 'package:tasky/Features/Login/Logic/cubit/login_cubit.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -29,6 +31,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   height: 300.h, width: double.infinity, fit: BoxFit.fitWidth),
               verticalSpace(14),
               Form(
+                key: BlocProvider.of<LoginCubit>(context).loginFormKey,
                 child: Column(
                   children: [
                     Padding(
@@ -49,11 +52,16 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                             initialCountryCode: 'EG',
                             onChanged: (phone) {
-                              // print(phone.completeNumber);
+                              BlocProvider.of<LoginCubit>(context)
+                                  .phoneController
+                                  .text = phone.completeNumber;
                             },
                           ),
                           verticalSpace(10),
                           AppTextFormField(
+                            maxLines: 1,
+                            controller: BlocProvider.of<LoginCubit>(context)
+                                .passwordController,
                             hintText: "Password",
                             validator: (value) {
                               if (value == null || value.isEmpty) {
@@ -85,7 +93,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               buttonText: "Sign in",
                               textStyle: TextStyles.font14WhiteSemiBold,
                               onPressed: () {
-                                context.pushNamed(Routes.loginScreen);
+                                login();
                               }),
                           verticalSpace(14),
                           Row(
@@ -105,6 +113,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             ],
                           ),
                           verticalSpace(20),
+                          _buildBlocLisenner(context),
                         ],
                       ),
                     )
@@ -116,5 +125,41 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       ),
     );
+  }
+
+  Widget _buildBlocLisenner(BuildContext context) {
+    return BlocListener<LoginCubit, LoginState>(
+        listenWhen: (previous, current) {
+          return previous != current;
+        },
+        listener: (context, state) {
+          if (state is LoginLoading) {
+            const Center(child: CircularProgressIndicator());
+          }
+          if (state is LoginSuccess) {
+            context.pushNamed(Routes.taskesScreen);
+          }
+          if (state is LoginError) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  state.message,
+                  style: TextStyles.font14WhiteSemiBold,
+                ),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
+        },
+        child: const SizedBox());
+  }
+
+  void login() {
+    if (BlocProvider.of<LoginCubit>(context)
+        .loginFormKey
+        .currentState!
+        .validate()) {
+      BlocProvider.of<LoginCubit>(context).loginCubit();
+    }
   }
 }
