@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:tasky/Core/Helper/extensions.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
 import 'package:tasky/Core/Helper/spacing.dart';
 import 'package:tasky/Core/Router/routes.dart';
-import 'package:tasky/Core/Theme/colors.dart';
 import 'package:tasky/Core/Theme/style.dart';
 import 'package:tasky/Core/Widgets/app_text_button.dart';
+import 'package:tasky/Features/Register/Logic/cubit/register_cubit.dart';
 
 import '../../../Core/Widgets/app_text_form_field.dart';
 
@@ -18,16 +20,8 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
-  final _formKey = GlobalKey<FormState>();
   bool _isPasswordVisible = false;
-  String? selectedExperienceLevel;
 
-  final List<String> experienceLevels = [
-    'Beginner',
-    'Intermediate',
-    'Advanced',
-    'Expert'
-  ];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -44,7 +38,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 20.w),
                 child: Form(
-                  key: _formKey,
+                  key: BlocProvider.of<RegisterCubit>(context).registerFormKey,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -53,6 +47,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         style: TextStyles.font24BlackBold,
                       ),
                       AppTextFormField(
+                        controller: BlocProvider.of<RegisterCubit>(context)
+                            .displayNameController,
                         hintText: 'Name...',
                         validator: (value) {
                           if (value == null || value.isEmpty) {
@@ -64,6 +60,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                       verticalSpace(14),
                       IntlPhoneField(
+                        controller: BlocProvider.of<RegisterCubit>(context)
+                            .phoneController,
                         decoration: DecorationStyle.inputDecoration.copyWith(
                           hintText: '123 456-7890',
                         ),
@@ -73,6 +71,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         },
                       ),
                       AppTextFormField(
+                          controller: BlocProvider.of<RegisterCubit>(context)
+                              .experienceYearsController,
                           hintText: "Years of experience...",
                           validator: (value) {
                             if (value == null || value.isEmpty) {
@@ -85,6 +85,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       _buildDropdown(),
                       verticalSpace(14),
                       AppTextFormField(
+                          controller: BlocProvider.of<RegisterCubit>(context)
+                              .addressController,
                           hintText: "Address...",
                           validator: (value) {
                             if (value == null || value.isEmpty) {
@@ -95,6 +97,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           keyboardType: TextInputType.streetAddress),
                       verticalSpace(14),
                       AppTextFormField(
+                        maxLines: 1,
+                        controller: BlocProvider.of<RegisterCubit>(context)
+                            .passwordController,
                         hintText: "Password",
                         validator: (value) {
                           if (value == null || value.isEmpty) {
@@ -126,7 +131,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           buttonText: "Signup",
                           textStyle: TextStyles.font14WhiteSemiBold,
                           onPressed: () {
-                            context.pushNamed(Routes.loginScreen);
+                            login(context);
                           }),
                       verticalSpace(14),
                       Row(
@@ -145,6 +150,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           ),
                         ],
                       ),
+                      _buildBlocLisenner(context),
                     ],
                   ),
                 ),
@@ -159,10 +165,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Widget _buildDropdown() {
     return DropdownButtonFormField<String>(
       decoration: DecorationStyle.inputDecoration.copyWith(
-        hintText: 'Experience Level',
+        hintText: 'Choose experience Level',
       ),
-      value: selectedExperienceLevel,
-      items: experienceLevels.map((String level) {
+      value: BlocProvider.of<RegisterCubit>(context).selectedExperienceLevel,
+      items: BlocProvider.of<RegisterCubit>(context)
+          .experienceLevels
+          .map((String level) {
         return DropdownMenuItem(
           value: level,
           child: Text(level),
@@ -170,7 +178,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
       }).toList(),
       onChanged: (String? newValue) {
         setState(() {
-          selectedExperienceLevel = newValue;
+          BlocProvider.of<RegisterCubit>(context).selectedExperienceLevel =
+              newValue;
         });
       },
       validator: (value) {
@@ -180,5 +189,49 @@ class _RegisterScreenState extends State<RegisterScreen> {
         return null;
       },
     );
+  }
+}
+
+Widget _buildBlocLisenner(BuildContext context) {
+  return BlocListener<RegisterCubit, RegisterState>(
+    listenWhen: (previous, current) {
+      return previous != current;
+    },
+    listener: (context, state) {
+      if (state is RegisterLoading) {
+        const Center(
+          child: CircularProgressIndicator(),
+        );
+      }
+      if (state is RegisterSuccess) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Register Success"),
+          ),
+        );
+        context.pushNamed(Routes.taskesScreen);
+      }
+      if (state is RegisterError) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(state.errorMessage),
+          ),
+        );
+      }
+    },
+    child: Container(),
+  );
+}
+
+void login(BuildContext context) {
+  if (BlocProvider.of<RegisterCubit>(context)
+      .registerFormKey
+      .currentState!
+      .validate()) {
+    BlocProvider.of<RegisterCubit>(context)
+        .registerFormKey
+        .currentState!
+        .save();
+    BlocProvider.of<RegisterCubit>(context).registerCubit();
   }
 }

@@ -18,7 +18,7 @@ class TaskyApp extends StatelessWidget {
           scaffoldBackgroundColor: Colors.white,
         ),
         debugShowCheckedModeBanner: false,
-        initialRoute: Routes.taskesScreen,
+        initialRoute: Routes.registerScreen,
         onGenerateRoute: appRouter.onGenerateRoute,
       ),
     );
