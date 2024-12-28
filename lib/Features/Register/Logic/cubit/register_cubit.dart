@@ -31,7 +31,7 @@ class RegisterCubit extends Cubit<RegisterState> {
     emit(RegisterLoading());
     try {
       var res = await registerRepo.registerRepo(
-          registerModel: RegisterModel(
+          registerModel: UserModel(
               phone: phoneController.text,
               password: passwordController.text,
               displayName: displayNameController.text,

@@ -5,6 +5,7 @@ import 'package:tasky/Core/Router/routes.dart';
 import 'package:tasky/Features/Login/Logic/cubit/login_cubit.dart';
 import 'package:tasky/Features/Login/Ui/login_screen.dart';
 import 'package:tasky/Features/Onboarding/Ui/onboarding_screen.dart';
+import 'package:tasky/Features/Profile/Logic/cubit/profile_cubit.dart';
 import 'package:tasky/Features/Profile/Ui/profile_screen.dart';
 import 'package:tasky/Features/Register/Logic/cubit/register_cubit.dart';
 import 'package:tasky/Features/Register/Ui/register_screen.dart';
@@ -39,7 +40,10 @@ class AppRouter {
         );
       case Routes.profileScreen:
         return MaterialPageRoute(
-          builder: (_) => const ProfileScreen(),
+          builder: (_) => BlocProvider(
+            create: (context) => getIt<ProfileCubit>(),
+            child: const ProfileScreen(),
+          ),
         );
       case Routes.taskDetailsScreen:
         return MaterialPageRoute(

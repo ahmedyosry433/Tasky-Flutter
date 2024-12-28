@@ -1,4 +1,4 @@
-class RegisterModel {
+class UserModel {
   final String phone;
   final String password;
   final String displayName;
@@ -6,7 +6,7 @@ class RegisterModel {
   final String address;
   final String level;
 
-  RegisterModel({
+  UserModel({
     required this.phone,
     required this.password,
     required this.displayName,
@@ -15,8 +15,8 @@ class RegisterModel {
     required this.level,
   });
 
-  factory RegisterModel.fromJson(Map<String, dynamic> json) {
-    return RegisterModel(
+  factory UserModel.fromJson(Map<String, dynamic> json) {
+    return UserModel(
       phone: json['phone'],
       password: json['password'],
       displayName: json['displayName'],

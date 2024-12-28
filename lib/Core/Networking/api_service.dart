@@ -12,7 +12,7 @@ class ApiService {
   final Dio _dio;
   ApiService(this._dio);
 
-  Future register({required RegisterModel registerModel}) async {
+  Future register({required UserModel registerModel}) async {
     var headers = {
       'Content-Type': 'application/json',
     };
@@ -25,6 +25,7 @@ class ApiService {
             ));
     return response.data;
   }
+
   Future login({required LoginModel loginModel}) async {
     var headers = {
       'Content-Type': 'application/json',
@@ -35,6 +36,20 @@ class ApiService {
             options: Options(
               headers: headers,
               method: 'POST',
+            ));
+    return response.data;
+  }
+
+  Future profile({required String token}) async {
+    var headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    };
+    Response response =
+        await _dio.request(ApiConstants.apiBaseUrl + ApiConstants.profilerUrl,
+            options: Options(
+              headers: headers,
+              method: 'GET',
             ));
     return response.data;
   }

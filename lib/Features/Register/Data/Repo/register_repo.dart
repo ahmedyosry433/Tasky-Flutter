@@ -5,7 +5,7 @@ class RegisterRepo {
   final ApiService apiService;
   RegisterRepo({required this.apiService});
 
-  Future registerRepo({required RegisterModel registerModel}) async {
+  Future registerRepo({required UserModel registerModel}) async {
     return await apiService.register(registerModel: registerModel);
   }
 }

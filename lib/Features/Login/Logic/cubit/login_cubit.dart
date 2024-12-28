@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
+// ignore: depend_on_referenced_packages
 import 'package:meta/meta.dart';
 import 'package:tasky/Core/Helper/shared_preferences_helper.dart';
 import 'package:tasky/Features/Login/Data/Model/login_model.dart';
