@@ -57,3 +57,13 @@ final class EditTaskError extends TaskState {
 
   EditTaskError(this.errorMessage);
 }
+
+final class AddTaskLoading extends TaskState {}
+
+final class AddTaskSuccess extends TaskState {}
+
+final class AddTaskError extends TaskState {
+  final String errorMessage;
+
+  AddTaskError(this.errorMessage);
+}

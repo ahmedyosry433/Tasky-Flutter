@@ -4,42 +4,47 @@ import 'dart:io';
 
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:tasky/Core/Helper/extensions.dart';
 import 'package:tasky/Core/Helper/spacing.dart';
+import 'package:tasky/Core/Router/routes.dart';
 import 'package:tasky/Core/Theme/style.dart';
 import 'package:tasky/Core/Widgets/app_text_button.dart';
 import 'package:tasky/Core/Widgets/app_text_form_field.dart';
 import 'package:tasky/Core/theme/colors.dart';
 import 'package:tasky/Features/Taskes/Data/Model/task_model.dart';
+import 'package:tasky/Features/Taskes/Logic/cubit/task_cubit.dart';
 
-class TaskCreationScreen extends StatefulWidget {
-  const TaskCreationScreen({super.key});
+class AddTaskScreen extends StatefulWidget {
+  const AddTaskScreen({super.key});
 
   @override
   // ignore: library_private_types_in_public_api
-  _TaskCreationScreenState createState() => _TaskCreationScreenState();
+  _AddTaskScreenState createState() => _AddTaskScreenState();
 }
 
-class _TaskCreationScreenState extends State<TaskCreationScreen> {
+class _AddTaskScreenState extends State<AddTaskScreen> {
   TaskPriority _priority = TaskPriority.medium;
   final ImagePicker _picker = ImagePicker();
-  File? _selectedImage;
+
   DateTime? _selectedDate;
 
   Future<void> _pickDate(BuildContext context) async {
     final DateTime? pickedDate = await showDatePicker(
       context: context,
-      initialDate: _selectedDate ?? DateTime.now(),
+      initialDate:
+          BlocProvider.of<TaskCubit>(context).dueDate ?? DateTime.now(),
       firstDate: DateTime(2023),
       lastDate: DateTime(2100),
     );
 
-    if (pickedDate != null && pickedDate != _selectedDate) {
+    if (pickedDate != null &&
+        pickedDate != BlocProvider.of<TaskCubit>(context).dueDate) {
       setState(() {
-        _selectedDate = pickedDate;
+        BlocProvider.of<TaskCubit>(context).dueDate = pickedDate;
       });
     }
   }
@@ -48,7 +53,7 @@ class _TaskCreationScreenState extends State<TaskCreationScreen> {
     try {
       final XFile? pickedFile = await showDialog<XFile>(
         context: context,
-        builder: (BuildContext context) {
+        builder: (BuildContext dialogContext) {
           return AlertDialog(
             title: const Text("Choose Image Source"),
             actions: [
@@ -58,9 +63,10 @@ class _TaskCreationScreenState extends State<TaskCreationScreen> {
                 onPressed: () async {
                   final picked =
                       await _picker.pickImage(source: ImageSource.camera);
-                  context.pop();
+                  dialogContext.pop();
                   setState(() {
-                    _selectedImage = File(picked!.path);
+                    context.read<TaskCubit>().imagePickedUrl =
+                        File(picked!.path);
                   });
                 },
               ),
@@ -70,9 +76,10 @@ class _TaskCreationScreenState extends State<TaskCreationScreen> {
                 onPressed: () async {
                   final picked =
                       await _picker.pickImage(source: ImageSource.gallery);
-                  context.pop();
+                  dialogContext.pop();
                   setState(() {
-                    _selectedImage = File(picked!.path);
+                    context.read<TaskCubit>().imagePickedUrl =
+                        File(picked!.path);
                   });
                 },
               ),
@@ -83,7 +90,7 @@ class _TaskCreationScreenState extends State<TaskCreationScreen> {
 
       if (pickedFile != null) {
         setState(() {
-          _selectedImage = File(pickedFile.path);
+          context.read<TaskCubit>().imagePickedUrl = File(pickedFile.path);
         });
       }
     } catch (e) {
@@ -93,6 +100,7 @@ class _TaskCreationScreenState extends State<TaskCreationScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final bloc = BlocProvider.of<TaskCubit>(context);
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(40.h),
@@ -105,25 +113,30 @@ class _TaskCreationScreenState extends State<TaskCreationScreen> {
             _buildImagePicker(),
             verticalSpace(20),
             AppTextFormField(
+                controller: bloc.titleController,
                 hintText: "Enter title here...",
                 validator: (valid) {},
                 keyboardType: TextInputType.text),
             verticalSpace(20),
             AppTextFormField(
+              controller: bloc.descController,
               maxLines: 5,
               hintText: "Enter description here...",
               validator: (valid) {},
               keyboardType: TextInputType.text,
             ),
             verticalSpace(20),
-            _buildPrioritySelector(),
+            _buildPrioritySelectorDropdown(),
             verticalSpace(20),
             _buildDueDateField(),
             verticalSpace(40),
             AppTextButton(
                 buttonText: "Add Task",
                 textStyle: TextStyles.font14WhiteSemiBold,
-                onPressed: () {})
+                onPressed: () {
+                  BlocProvider.of<TaskCubit>(context).addTaskCubit();
+                }),
+            _buildAddTaskBlocLisener(),
           ],
         ),
       ),
@@ -196,22 +209,15 @@ class _TaskCreationScreenState extends State<TaskCreationScreen> {
       ),
       readOnly: true,
       controller: TextEditingController(
-          text: _selectedDate == null
+          text: BlocProvider.of<TaskCubit>(context).dueDate == null
               ? ''
-              : DateFormat('d / M / yyyy').format(_selectedDate!).toString()),
+              : DateFormat('yyyy - M - d')
+                  .format(BlocProvider.of<TaskCubit>(context).dueDate!)
+                  .toString()),
     );
   }
 
-  Widget _buildPrioritySelector() {
-    return _buildPrioritySelectorDropdown(
-      priority: _priority,
-      onChanged: (value) => setState(() => _priority = value),
-    );
-  }
-
-  Widget _buildPrioritySelectorDropdown(
-      {required TaskPriority priority,
-      required ValueChanged<TaskPriority> onChanged}) {
+  Widget _buildPrioritySelectorDropdown() {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
       decoration: BoxDecoration(
@@ -219,15 +225,15 @@ class _TaskCreationScreenState extends State<TaskCreationScreen> {
         borderRadius: BorderRadius.circular(8.r),
       ),
       child: DropdownButtonHideUnderline(
-        child: DropdownButton<TaskPriority>(
-          value: priority,
+        child: DropdownButton<String>(
+          value: BlocProvider.of<TaskCubit>(context).selectedPriority,
           isExpanded: true,
           icon: Image.asset(
             'assets/image/arrow_down.png',
             width: 24.w,
           ),
-          items: TaskPriority.values.map((TaskPriority priority) {
-            return DropdownMenuItem<TaskPriority>(
+          items: ['low', 'medium', 'high'].map((priority) {
+            return DropdownMenuItem<String>(
               value: priority,
               child: Row(
                 children: [
@@ -235,20 +241,39 @@ class _TaskCreationScreenState extends State<TaskCreationScreen> {
                       size: 20.r, color: ColorsManager.primryColor),
                   horizontalSpace(8),
                   Text(
-                    priority.displayName,
+                    priority,
                     style: TextStyles.font14PrimarySemiBold,
                   ),
                 ],
               ),
             );
           }).toList(),
-          onChanged: (TaskPriority? newValue) {
+          onChanged: (newValue) {
             if (newValue != null) {
-              onChanged(newValue);
+              setState(() {
+                BlocProvider.of<TaskCubit>(context).selectedPriority = newValue;
+              });
             }
           },
         ),
       ),
+    );
+  }
+
+  Widget _buildAddTaskBlocLisener() {
+    return BlocListener<TaskCubit, TaskState>(
+      listenWhen: (previous, current) => previous != current,
+      listener: (context, state) {
+        if (state is AddTaskLoading) {
+          const Center(child: CircularProgressIndicator());
+        } else if (state is AddTaskSuccess) {
+          context.pushNamed(Routes.taskesScreen);
+        }
+        if (state is AddTaskError) {
+          Text(state.errorMessage);
+        }
+      },
+      child: const SizedBox.shrink(),
     );
   }
 }

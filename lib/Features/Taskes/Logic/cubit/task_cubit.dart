@@ -1,4 +1,8 @@
+import 'dart:io';
+
 import 'package:bloc/bloc.dart';
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:meta/meta.dart';
 import 'package:tasky/Features/Taskes/Data/Model/task_model.dart';
 import 'package:tasky/Features/Taskes/Data/Repo/task_repo.dart';
@@ -8,6 +12,12 @@ part 'task_state.dart';
 class TaskCubit extends Cubit<TaskState> {
   final TaskRepo _taskRepo;
   TaskCubit(this._taskRepo) : super(TaskInitial());
+
+  TextEditingController titleController = TextEditingController();
+  TextEditingController descController = TextEditingController();
+  String? selectedPriority = 'low';
+  File? imagePickedUrl;
+  DateTime? dueDate;
 
   List<TaskModel> tasksList = [];
   List<TaskModel> allTasks = [];
@@ -78,12 +88,29 @@ class TaskCubit extends Cubit<TaskState> {
   void editTaskCubit({required TaskModel task}) async {
     emit(EditTaskLoading());
     try {
-      var res = await _taskRepo.editTaskRepo(task: task);
+      await _taskRepo.editTaskRepo(task: task);
       emit(EditTaskSuccess());
-      print("_____________TASK EDIT DONE${res.toJson()} ");
     } catch (e) {
-      print("___ERROR EDIT TASK ______$e");
       emit(EditTaskError(e.toString()));
+    }
+  }
+
+  void addTaskCubit() async {
+    emit(AddTaskLoading());
+    try {
+      await _taskRepo.addTaskRepo(
+        task: AddTaskModel(
+            image: imagePickedUrl!.path,
+            title: titleController.text,
+            desc: descController.text,
+            priority: selectedPriority!,
+            dueDate: DateFormat('yyyy - M - d').format(dueDate!).toString()),
+      );
+
+      emit(AddTaskSuccess());
+    } catch (e) {
+      print("____________Error: " + e.toString());
+      emit(AddTaskError(e.toString()));
     }
   }
 }

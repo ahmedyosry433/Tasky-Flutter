@@ -24,4 +24,8 @@ class TaskRepo {
   Future<TaskModel> editTaskRepo({required TaskModel task}) {
     return _api_service.editTask(task: task);
   }
+
+  Future addTaskRepo({required AddTaskModel task}) {
+    return _api_service.addTask(addTask: task);
+  }
 }
