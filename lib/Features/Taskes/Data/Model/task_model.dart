@@ -5,6 +5,7 @@ class TaskModel {
   final String priority;
   final String imageUrl;
   final String status;
+  final String userId;
 
   TaskModel({
     required this.id,
@@ -13,6 +14,7 @@ class TaskModel {
     required this.priority,
     required this.imageUrl,
     required this.status,
+    required this.userId,
   });
   factory TaskModel.fromJson(Map<String, dynamic> json) {
     return TaskModel(
@@ -22,6 +24,7 @@ class TaskModel {
       priority: json['priority'],
       imageUrl: json['image'],
       status: json['status'],
+      userId: json['user'],
     );
   }
   Map<String, dynamic> toJson() {
@@ -32,6 +35,7 @@ class TaskModel {
       'priority': priority,
       'image': imageUrl,
       'status': status,
+      'user': userId,
     };
   }
 }

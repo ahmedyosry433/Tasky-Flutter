@@ -11,6 +11,7 @@ class TaskCubit extends Cubit<TaskState> {
 
   List<TaskModel> tasksList = [];
   List<TaskModel> allTasks = [];
+  TaskModel? oneTask;
 
   void logoutCubit() async {
     emit(LogoutLoading());
@@ -43,8 +44,7 @@ class TaskCubit extends Cubit<TaskState> {
         tasksList = allTasks;
       } else {
         tasksList = allTasks
-            .where((task) =>
-                task.status == status || task.status == status.toLowerCase())
+            .where((task) => task.status.toLowerCase() == status.toLowerCase())
             .toList();
       }
 
@@ -54,15 +54,36 @@ class TaskCubit extends Cubit<TaskState> {
     }
   }
 
+  void getOneTaskCubit({required String taskId}) async {
+    emit(OneTaskLoading());
+    try {
+      TaskModel res = await _taskRepo.getOneTaskRepo(taskID: taskId);
+      oneTask = res;
+      emit(OneTaskSuccess(res));
+    } catch (e) {
+      emit(OneTaskError(e.toString()));
+    }
+  }
+
   void deleteTaskCubit({required String taskId}) async {
     emit(DeleteTaskLoading());
     try {
-      var res = await _taskRepo.deleteTaskRepo(taskID: taskId);
-      print("DELETE DONE : ${res.title}");
+      await _taskRepo.deleteTaskRepo(taskID: taskId);
       emit(DeleteTaskSuccess());
     } catch (e) {
-      print("Error Delete: " + e.toString());
       emit(DeleteTaskError(e.toString()));
+    }
+  }
+
+  void editTaskCubit({required TaskModel task}) async {
+    emit(EditTaskLoading());
+    try {
+      var res = await _taskRepo.editTaskRepo(task: task);
+      emit(EditTaskSuccess());
+      print("_____________TASK EDIT DONE${res.toJson()} ");
+    } catch (e) {
+      print("___ERROR EDIT TASK ______$e");
+      emit(EditTaskError(e.toString()));
     }
   }
 }

@@ -16,4 +16,12 @@ class TaskRepo {
   Future<TaskModel> deleteTaskRepo({required String taskID}) {
     return _api_service.deleteTask(taskID: taskID);
   }
+
+  Future<TaskModel> getOneTaskRepo({required String taskID}) {
+    return _api_service.getOneTask(taskID: taskID);
+  }
+
+  Future<TaskModel> editTaskRepo({required TaskModel task}) {
+    return _api_service.editTask(task: task);
+  }
 }

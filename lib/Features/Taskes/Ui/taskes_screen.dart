@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:tasky/Core/Helper/extensions.dart';
 import 'package:tasky/Core/Helper/spacing.dart';
 import 'package:tasky/Core/Router/routes.dart';
@@ -28,29 +31,36 @@ class _TaskListScreenState extends State<TaskListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
-        child: Stack(
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildAppbar(),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16.w),
-                  child: Text(
-                    'My Tasks',
-                    style: TextStyles.font17GrayBold,
+    return RefreshIndicator(
+      onRefresh: () async {
+        BlocProvider.of<TaskCubit>(context).tasksListCubit();
+      },
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        body: SafeArea(
+          child: Stack(
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildAppbar(),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16.w),
+                    child: Text(
+                      'My Tasks',
+                      style: TextStyles.font17GrayBold,
+                    ),
                   ),
-                ),
-                _buildFilter(),
-                _buildCardBlocBuilder(),
-              ],
-            ),
-            _buildFloatingActionBtn(),
-            _buildLogoutBlocLisener(context),
-          ],
+                  _buildFilter(),
+                  _buildCardBlocBuilder(),
+                ],
+              ),
+              _buildFloatingActionBtn(),
+              _buildLogoutBlocLisener(context),
+              _buildDeleteBlocLisener(),
+              _buildEditBlocLisener(),
+            ],
+          ),
         ),
       ),
     );
@@ -132,8 +142,63 @@ class _TaskListScreenState extends State<TaskListScreen> {
                           ),
                         ),
                         horizontalSpace(2),
-                        GestureDetector(
-                            onTap: () {}, child: const Icon(Icons.more_vert)),
+                        PopupMenuButton(
+                          position: PopupMenuPosition.under,
+                          color: Colors.white,
+                          child: Icon(
+                            Icons.more_vert,
+                            color: Colors.black,
+                            size: 24.r,
+                          ),
+                          onSelected: (value) {
+                            if (value == 'edit') {
+                              showEditDialog(context, task);
+                            } else if (value == 'delete') {
+                              showDialog(
+                                context: context,
+                                builder: (dialogContext) {
+                                  return AlertDialog(
+                                    title: const Text("Confirm Delete"),
+                                    content: const Text(
+                                        "Are you sure you want to delete this item?"),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () {
+                                          dialogContext
+                                              .pop(); // Close the dialog
+                                        },
+                                        child: const Text("Cancel"),
+                                      ),
+                                      TextButton(
+                                        onPressed: () {
+                                          BlocProvider.of<TaskCubit>(context)
+                                              .deleteTaskCubit(taskId: task.id);
+                                          dialogContext
+                                              .pop(); // Close the dialog
+                                        },
+                                        child: const Text(
+                                          "Delete",
+                                          style: TextStyle(color: Colors.red),
+                                        ),
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+                            }
+                          },
+                          itemBuilder: (context) => [
+                            const PopupMenuItem(
+                              value: 'edit',
+                              child: Text('Edit'),
+                            ),
+                            const PopupMenuItem(
+                              value: 'delete',
+                              child: Text('Delete',
+                                  style: TextStyle(color: Colors.red)),
+                            ),
+                          ],
+                        ),
                       ],
                     ),
                     verticalSpace(7),
@@ -249,7 +314,9 @@ class _TaskListScreenState extends State<TaskListScreen> {
               itemBuilder: (context, index) {
                 return _buildTaskCard(
                     BlocProvider.of<TaskCubit>(context).tasksList[index], () {
-                  context.pushNamed(Routes.taskDetailsScreen);
+                  context.pushNamed(Routes.taskDetailsScreen,
+                      arguments:
+                          BlocProvider.of<TaskCubit>(context).tasksList[index]);
                 });
               },
             ),
@@ -347,5 +414,162 @@ class _TaskListScreenState extends State<TaskListScreen> {
             }),
       ),
     );
+  }
+
+  void showEditDialog(BuildContext context, TaskModel task) {
+    // Controllers for form fields
+    TextEditingController titleController =
+        TextEditingController(text: task.title);
+    TextEditingController descController =
+        TextEditingController(text: task.description);
+    String selectedPriority = task.priority;
+    String selectedStatus = task.status;
+    String imagePath = task.imageUrl;
+
+    showDialog(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: const Text("Edit Task"),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                imagePath.isNotEmpty
+                    ? Image.file(File(imagePath),
+                        height: 50.h, width: 50.w, fit: BoxFit.cover)
+                    : const SizedBox(),
+                TextButton.icon(
+                  onPressed: () async {
+                    final picker = ImagePicker();
+                    final pickedFile =
+                        await picker.pickImage(source: ImageSource.gallery);
+                    if (pickedFile != null) {
+                      setState(() {
+                        imagePath = pickedFile.path;
+                      });
+                    }
+                  },
+                  icon: const Icon(Icons.image),
+                  label: const Text("Select Image"),
+                ),
+
+                // Title Input
+                TextFormField(
+                  controller: titleController,
+                  decoration: const InputDecoration(
+                    labelText: "Title",
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+                const SizedBox(height: 16),
+
+                // Description Input
+                TextFormField(
+                  controller: descController,
+                  decoration: const InputDecoration(
+                    labelText: "Description",
+                    border: OutlineInputBorder(),
+                  ),
+                  maxLines: 3,
+                ),
+                const SizedBox(height: 16),
+
+                // Priority Dropdown
+                DropdownButtonFormField<String>(
+                  value: selectedPriority.toLowerCase(),
+                  items: ['Low', 'Medium', 'High']
+                      .map((priority) => DropdownMenuItem(
+                            value: priority.toLowerCase(),
+                            child: Text(priority),
+                          ))
+                      .toList(),
+                  onChanged: (value) {
+                    selectedPriority = value!;
+                  },
+                  decoration: const InputDecoration(
+                    labelText: "Priority",
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+                const SizedBox(height: 16),
+
+                // Status Dropdown
+                DropdownButtonFormField<String>(
+                  value: selectedStatus.toLowerCase(),
+                  items: ['Waiting', 'Inprogress', 'Finished']
+                      .map((status) => DropdownMenuItem(
+                            value: status.toLowerCase(),
+                            child: Text(status),
+                          ))
+                      .toList(),
+                  onChanged: (value) {
+                    selectedStatus = value!;
+                  },
+                  decoration: const InputDecoration(
+                    labelText: "Status",
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext), // Close dialog
+              child: const Text("Cancel"),
+            ),
+            TextButton(
+              onPressed: () {
+                BlocProvider.of<TaskCubit>(context).editTaskCubit(
+                    task: TaskModel(
+                        id: task.id,
+                        title: titleController.text,
+                        description: descController.text,
+                        priority: selectedPriority,
+                        imageUrl: imagePath,
+                        status: selectedStatus,
+                        userId: task.userId));
+                print("____DONE__________");
+                dialogContext.pop();
+              },
+              child: Text(
+                "Save",
+                style: TextStyles.font14PrimarySemiBold,
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildDeleteBlocLisener() {
+    return BlocListener<TaskCubit, TaskState>(
+      listener: (context, state) {
+        if (state is DeleteTaskLoading) {
+        } else if (state is DeleteTaskSuccess) {
+          context.pushReplacementNamed(Routes.taskesScreen);
+        } else if (state is DeleteTaskError) {}
+      },
+      child: const SizedBox.shrink(),
+    );
+  }
+
+  _buildEditBlocLisener() {
+    return BlocListener<TaskCubit, TaskState>(
+        listenWhen: (previous, current) => previous != current,
+        listener: (context, state) {
+          if (state is EditTaskLoading) {
+            const Center(
+              child: CircularProgressIndicator(),
+            );
+          } else if (state is EditTaskSuccess) {
+            BlocProvider.of<TaskCubit>(context).tasksListCubit();
+          } else if (state is EditTaskError) {
+            Text("EDIT ERROR _${state.errorMessage}");
+          }
+        },
+        child: const SizedBox.shrink());
   }
 }

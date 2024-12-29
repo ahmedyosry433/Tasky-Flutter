@@ -15,6 +15,19 @@ final class TaskError extends TaskState {
   TaskError(this.errorMessage);
 }
 
+final class OneTaskLoading extends TaskState {}
+
+final class OneTaskSuccess extends TaskState {
+  final TaskModel task;
+  OneTaskSuccess(this.task);
+}
+
+final class OneTaskError extends TaskState {
+  final String errorMessage;
+
+  OneTaskError(this.errorMessage);
+}
+
 final class LogoutLoading extends TaskState {}
 
 final class LogoutSuccess extends TaskState {}
@@ -33,4 +46,14 @@ final class DeleteTaskError extends TaskState {
   final String errorMessage;
 
   DeleteTaskError(this.errorMessage);
+}
+
+final class EditTaskLoading extends TaskState {}
+
+final class EditTaskSuccess extends TaskState {}
+
+final class EditTaskError extends TaskState {
+  final String errorMessage;
+
+  EditTaskError(this.errorMessage);
 }

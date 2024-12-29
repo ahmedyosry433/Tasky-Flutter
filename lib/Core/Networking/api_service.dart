@@ -103,4 +103,32 @@ class ApiService {
         ));
     return TaskModel.fromJson(response.data);
   }
+  Future<TaskModel> getOneTask({required String taskID}) async {
+    var headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ${await getToken()}',
+    };
+    Response response = await _dio.request(
+        "${ApiConstants.apiBaseUrl}${ApiConstants.taskesrUrl}/$taskID",
+        options: Options(
+          headers: headers,
+          method: 'GET',
+        ));
+    return TaskModel.fromJson(response.data);
+  }
+
+  Future<TaskModel> editTask({required TaskModel task}) async {
+    var headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ${await getToken()}',
+    };
+    Response response = await _dio.request(
+        "${ApiConstants.apiBaseUrl}${ApiConstants.taskesrUrl}/${task.id}",
+        data: task,
+        options: Options(
+          headers: headers,
+          method: 'PUT',
+        ));
+    return TaskModel.fromJson(response.data);
+  }
 }
