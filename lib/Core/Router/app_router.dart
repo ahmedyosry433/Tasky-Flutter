@@ -54,7 +54,10 @@ class AppRouter {
 
       case Routes.taskDetailsScreen:
         return MaterialPageRoute(
-          builder: (_) => TaskDetailsScreen(task: argument as TaskModel),
+          builder: (_) => BlocProvider(
+            create: (context) => getIt<TaskCubit>(),
+            child: TaskDetailsScreen(task: argument as TaskModel),
+          ),
         );
       case Routes.taskCreationScreen:
         return MaterialPageRoute(

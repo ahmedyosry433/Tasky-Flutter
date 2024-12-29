@@ -12,4 +12,8 @@ class TaskRepo {
   Future<List<TaskModel>> tasksListRepo() {
     return _api_service.tasksList();
   }
+
+  Future<TaskModel> deleteTaskRepo({required String taskID}) {
+    return _api_service.deleteTask(taskID: taskID);
+  }
 }

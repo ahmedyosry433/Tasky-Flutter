@@ -53,4 +53,16 @@ class TaskCubit extends Cubit<TaskState> {
       emit(TaskError(e.toString()));
     }
   }
+
+  void deleteTaskCubit({required String taskId}) async {
+    emit(DeleteTaskLoading());
+    try {
+      var res = await _taskRepo.deleteTaskRepo(taskID: taskId);
+      print("DELETE DONE : ${res.title}");
+      emit(DeleteTaskSuccess());
+    } catch (e) {
+      print("Error Delete: " + e.toString());
+      emit(DeleteTaskError(e.toString()));
+    }
+  }
 }

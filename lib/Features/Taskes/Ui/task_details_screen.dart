@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:tasky/Core/Helper/extensions.dart';
 import 'package:tasky/Core/Helper/spacing.dart';
+import 'package:tasky/Core/Router/routes.dart';
 import 'package:tasky/Core/Theme/style.dart';
 import 'package:tasky/Core/theme/colors.dart';
 import 'package:tasky/Features/Taskes/Data/Model/task_model.dart';
+import 'package:tasky/Features/Taskes/Logic/cubit/task_cubit.dart';
 
 class TaskDetailsScreen extends StatelessWidget {
   const TaskDetailsScreen({required this.task, super.key});
@@ -37,9 +40,9 @@ class TaskDetailsScreen extends StatelessWidget {
                       color: ColorsManager.primryColor),
                 ),
                 verticalSpace(10),
-                _buildDropdownCard(label: 'Status', value: task.status),
+                _buildDropdownShapCard(label: 'Status', value: task.status),
                 verticalSpace(10),
-                _buildDropdownCard(
+                _buildDropdownShapCard(
                   label: 'Priority',
                   value: '${task.priority} Priority',
                   icon: const Icon(Icons.flag_outlined,
@@ -53,6 +56,7 @@ class TaskDetailsScreen extends StatelessWidget {
                     height: 200.h,
                   ),
                 ),
+                _buildDeleteBlocLisener(),
               ],
             ),
           ),
@@ -77,10 +81,41 @@ class TaskDetailsScreen extends StatelessWidget {
               size: 24.r,
             ),
             onSelected: (value) {
-              if (value == 'edit') {
-                // Navigate to edit screen
-              } else {
-                // Show delete confirmation dialog
+              // if (value == 'edit') {
+              //   context.pushNamed(Routes.taskesScreen);
+              // }
+              if (value == 'delete') {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: const Text("Confirm Delete"),
+                      content: const Text(
+                          "Are you sure you want to delete this item?"),
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            context.pop(); // Close the dialog
+                          },
+                          child: const Text("Cancel"),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            context
+                                .read<TaskCubit>()
+                                .deleteTaskCubit(taskId: task.id);
+                            print("Item deleted");
+                            context.pop(); // Close the dialog
+                          },
+                          child: const Text(
+                            "Delete",
+                            style: TextStyle(color: Colors.red),
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                );
               }
             },
             itemBuilder: (context) => [
@@ -134,7 +169,7 @@ class TaskDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildDropdownCard(
+  Widget _buildDropdownShapCard(
       {required String label, required String value, Widget? icon}) {
     return Container(
       padding: const EdgeInsets.all(16),
@@ -158,6 +193,18 @@ class TaskDetailsScreen extends StatelessWidget {
           Image.asset('assets/image/arrow_down.png', width: 24.w),
         ],
       ),
+    );
+  }
+
+  Widget _buildDeleteBlocLisener() {
+    return BlocListener<TaskCubit, TaskState>(
+      listener: (context, state) {
+        if (state is DeleteTaskSuccess) {
+          // BlocProvider.of<TaskCubit>(context).tasksListCubit();
+          context.pushReplacementNamed(Routes.taskesScreen);
+        } else if (state is DeleteTaskError) {}
+      },
+      child: const SizedBox.shrink(),
     );
   }
 }

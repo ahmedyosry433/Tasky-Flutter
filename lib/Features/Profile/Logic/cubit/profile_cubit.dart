@@ -1,6 +1,5 @@
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
-import 'package:tasky/Core/helper/shared_preferences_helper.dart';
 import 'package:tasky/Features/Profile/Data/Repo/profile_repo.dart';
 
 part 'profile_state.dart';

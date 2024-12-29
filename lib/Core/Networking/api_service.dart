@@ -89,4 +89,18 @@ class ApiService {
     }
     return tasksList;
   }
+
+  Future<TaskModel> deleteTask({required String taskID}) async {
+    var headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ${await getToken()}',
+    };
+    Response response = await _dio.request(
+        "${ApiConstants.apiBaseUrl}${ApiConstants.taskesrUrl}/$taskID",
+        options: Options(
+          headers: headers,
+          method: 'DELETE',
+        ));
+    return TaskModel.fromJson(response.data);
+  }
 }
