@@ -4,9 +4,11 @@ import 'package:tasky/Core/Helper/extensions.dart';
 import 'package:tasky/Core/Helper/spacing.dart';
 import 'package:tasky/Core/Theme/style.dart';
 import 'package:tasky/Core/theme/colors.dart';
+import 'package:tasky/Features/Taskes/Data/Model/task_model.dart';
 
 class TaskDetailsScreen extends StatelessWidget {
-  const TaskDetailsScreen({super.key});
+  const TaskDetailsScreen({required this.task, super.key});
+  final TaskModel task;
 
   @override
   Widget build(BuildContext context) {
@@ -24,14 +26,9 @@ class TaskDetailsScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Image.asset('assets/image/task_img.png'),
-                Text('Grocery Shopping App', style: TextStyles.font18BlackBold),
+                Text(task.title, style: TextStyles.font18BlackBold),
                 verticalSpace(8),
-                Text(
-                    'This application is designed for super shops. By using '
-                    'this application they can enlist all their products in one '
-                    'place and can deliver. Customers will get a one-stop '
-                    'solution for their daily shopping.',
-                    style: TextStyles.font14GrayRegular),
+                Text(task.description, style: TextStyles.font14GrayRegular),
                 verticalSpace(20),
                 _buildInfoCard(
                   label: 'End Date',
@@ -40,11 +37,11 @@ class TaskDetailsScreen extends StatelessWidget {
                       color: ColorsManager.primryColor),
                 ),
                 verticalSpace(10),
-                _buildDropdownCard(label: 'Status', value: 'Inprogress'),
+                _buildDropdownCard(label: 'Status', value: task.status),
                 verticalSpace(10),
                 _buildDropdownCard(
                   label: 'Priority',
-                  value: 'Medium Priority',
+                  value: '${task.priority} Priority',
                   icon: const Icon(Icons.flag_outlined,
                       color: ColorsManager.primryColor),
                 ),

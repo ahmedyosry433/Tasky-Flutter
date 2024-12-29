@@ -49,7 +49,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
               ],
             ),
             _buildFloatingActionBtn(),
-            _buildBlocLisener(context),
+            _buildLogoutBlocLisener(context),
           ],
         ),
       ),
@@ -89,7 +89,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
 
     return GestureDetector(
       onTap: () {
-        context.pushNamed(Routes.taskDetailsScreen);
+        context.pushNamed(Routes.taskDetailsScreen, arguments: task);
       },
       child: Card(
         color: Colors.white,
@@ -208,7 +208,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
     );
   }
 
-  Widget _buildBlocLisener(BuildContext context) {
+  Widget _buildLogoutBlocLisener(BuildContext context) {
     return BlocListener<TaskCubit, TaskState>(
         listenWhen: (previous, current) {
           return previous != current;

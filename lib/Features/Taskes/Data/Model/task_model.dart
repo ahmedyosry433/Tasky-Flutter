@@ -3,7 +3,7 @@ class TaskModel {
   final String title;
   final String description;
   final String priority;
-  final String? imageUrl;
+  final String imageUrl;
   final String status;
 
   TaskModel({
