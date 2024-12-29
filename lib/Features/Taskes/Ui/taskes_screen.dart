@@ -36,7 +36,6 @@ class _TaskListScreenState extends State<TaskListScreen> {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // App Bar
                 _buildAppbar(),
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 16.w),
@@ -45,120 +44,11 @@ class _TaskListScreenState extends State<TaskListScreen> {
                     style: TextStyles.font17GrayBold,
                   ),
                 ),
-
-                // Filter Chips
-                Padding(
-                  padding:
-                      EdgeInsets.symmetric(vertical: 10.h, horizontal: 16.w),
-                  child: SizedBox(
-                    height: 37.h,
-                    child: ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        shrinkWrap: true,
-                        itemCount: filters.length,
-                        itemBuilder: (context, index) {
-                          return GestureDetector(
-                            onTap: () async {
-                              setState(() {
-                                selectedFilter = index;
-                                BlocProvider.of<TaskCubit>(context)
-                                    .filterTasksByStatus(filters[index]);
-                              });
-                            },
-                            child: Container(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 14.w, vertical: 10.h),
-                              margin: EdgeInsets.only(right: 5.w),
-                              decoration: BoxDecoration(
-                                color: selectedFilter == index
-                                    ? ColorsManager.primryColor
-                                    : ColorsManager.lightPrimryColor,
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              child: Text(
-                                filters[index],
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: selectedFilter == index
-                                      ? ColorsManager.whiteColor
-                                      : ColorsManager.grayColor,
-                                ),
-                              ),
-                            ),
-                          );
-                        }),
-                  ),
-                ),
-                BlocBuilder<TaskCubit, TaskState>(
-                  builder: (context, state) {
-                    if (state is TaskLoading) {
-                      return const Center(child: CircularProgressIndicator());
-                    }
-                    if (state is TaskSuccess) {
-                      return Expanded(
-                        child: ListView.builder(
-                          padding: EdgeInsets.symmetric(horizontal: 16.w),
-                          itemCount: BlocProvider.of<TaskCubit>(context)
-                              .tasksList
-                              .length,
-                          itemBuilder: (context, index) {
-                            return _buildTaskCard(
-                                BlocProvider.of<TaskCubit>(context)
-                                    .tasksList[index], () {
-                              context.pushNamed(Routes.taskDetailsScreen);
-                            });
-                          },
-                        ),
-                      );
-                    }
-                    if (state is TaskError) {
-                      return Center(
-                        child: Text(state.errorMessage.toString()),
-                      );
-                    }
-                    return const SizedBox.shrink();
-                  },
-                ),
+                _buildFilter(),
+                _buildCardBlocBuilder(),
               ],
             ),
-            // Floating Action Buttons
-            Positioned(
-              bottom: 16.h,
-              right: 16.w,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  FloatingActionButton(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(50),
-                    ),
-                    heroTag: 'qr',
-                    onPressed: () {},
-                    backgroundColor: ColorsManager.lightPrimryColor,
-                    mini: true,
-                    child: const Icon(
-                      Icons.qr_code,
-                      color: ColorsManager.primryColor,
-                    ),
-                  ),
-                  verticalSpace(8),
-                  FloatingActionButton(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(50),
-                    ),
-                    heroTag: 'add',
-                    onPressed: () {
-                      context.pushNamed(Routes.taskCreationScreen);
-                    },
-                    backgroundColor: ColorsManager.primryColor,
-                    child: const Icon(
-                      Icons.add,
-                      color: ColorsManager.whiteColor,
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            _buildFloatingActionBtn(),
             _buildBlocLisener(context),
           ],
         ),
@@ -343,5 +233,119 @@ class _TaskListScreenState extends State<TaskListScreen> {
           }
         },
         child: const SizedBox.shrink());
+  }
+
+  Widget _buildCardBlocBuilder() {
+    return BlocBuilder<TaskCubit, TaskState>(
+      builder: (context, state) {
+        if (state is TaskLoading) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        if (state is TaskSuccess) {
+          return Expanded(
+            child: ListView.builder(
+              padding: EdgeInsets.symmetric(horizontal: 16.w),
+              itemCount: BlocProvider.of<TaskCubit>(context).tasksList.length,
+              itemBuilder: (context, index) {
+                return _buildTaskCard(
+                    BlocProvider.of<TaskCubit>(context).tasksList[index], () {
+                  context.pushNamed(Routes.taskDetailsScreen);
+                });
+              },
+            ),
+          );
+        }
+        if (state is TaskError) {
+          return Center(
+            child: Text(state.errorMessage.toString()),
+          );
+        }
+        return const SizedBox.shrink();
+      },
+    );
+  }
+
+  Widget _buildFloatingActionBtn() {
+    return Positioned(
+      bottom: 16.h,
+      right: 16.w,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          FloatingActionButton(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(50),
+            ),
+            heroTag: 'qr',
+            onPressed: () {},
+            backgroundColor: ColorsManager.lightPrimryColor,
+            mini: true,
+            child: const Icon(
+              Icons.qr_code,
+              color: ColorsManager.primryColor,
+            ),
+          ),
+          verticalSpace(8),
+          FloatingActionButton(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(50),
+            ),
+            heroTag: 'add',
+            onPressed: () {
+              context.pushNamed(Routes.taskCreationScreen);
+            },
+            backgroundColor: ColorsManager.primryColor,
+            child: const Icon(
+              Icons.add,
+              color: ColorsManager.whiteColor,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFilter() {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 16.w),
+      child: SizedBox(
+        height: 37.h,
+        child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            shrinkWrap: true,
+            itemCount: filters.length,
+            itemBuilder: (context, index) {
+              return GestureDetector(
+                onTap: () async {
+                  setState(() {
+                    selectedFilter = index;
+                    BlocProvider.of<TaskCubit>(context)
+                        .filterTasksByStatus(filters[index]);
+                  });
+                },
+                child: Container(
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 14.w, vertical: 10.h),
+                  margin: EdgeInsets.only(right: 5.w),
+                  decoration: BoxDecoration(
+                    color: selectedFilter == index
+                        ? ColorsManager.primryColor
+                        : ColorsManager.lightPrimryColor,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    filters[index],
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: selectedFilter == index
+                          ? ColorsManager.whiteColor
+                          : ColorsManager.grayColor,
+                    ),
+                  ),
+                ),
+              );
+            }),
+      ),
+    );
   }
 }
