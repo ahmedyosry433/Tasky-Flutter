@@ -6,11 +6,15 @@ import 'package:dio/dio.dart';
 import 'package:tasky/Core/Networking/api_constants.dart';
 import 'package:tasky/Features/Login/Data/Model/login_model.dart';
 import 'package:tasky/Features/Register/Data/Model/register_model.dart';
+import 'package:tasky/Features/Taskes/Data/Model/task_model.dart';
 import '../Helper/shared_preferences_helper.dart';
 
 class ApiService {
   final Dio _dio;
   ApiService(this._dio);
+  Future<String> getToken() async {
+    return await SharedPreferencesHelper.getValueForKey('token');
+  }
 
   Future register({required UserModel registerModel}) async {
     var headers = {
@@ -40,10 +44,10 @@ class ApiService {
     return response.data;
   }
 
-  Future profile({required String token}) async {
+  Future profile() async {
     var headers = {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer $token',
+      'Authorization': 'Bearer ${await getToken()}',
     };
     Response response =
         await _dio.request(ApiConstants.apiBaseUrl + ApiConstants.profilerUrl,
@@ -54,10 +58,10 @@ class ApiService {
     return response.data;
   }
 
-  Future logout({required String token}) async {
+  Future logout() async {
     var headers = {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer $token',
+      'Authorization': 'Bearer ${await getToken()}',
     };
     Response response =
         await _dio.request(ApiConstants.apiBaseUrl + ApiConstants.logoutrUrl,
@@ -66,5 +70,23 @@ class ApiService {
               method: 'POST',
             ));
     return response.data;
+  }
+
+  Future<List<TaskModel>> tasksList() async {
+    var headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ${await getToken()}',
+    };
+    Response response =
+        await _dio.request(ApiConstants.apiBaseUrl + ApiConstants.taskesrUrl,
+            options: Options(
+              headers: headers,
+              method: 'GET',
+            ));
+    List<TaskModel> tasksList = [];
+    for (var task in response.data) {
+      tasksList.add(TaskModel.fromJson(task));
+    }
+    return tasksList;
   }
 }

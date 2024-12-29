@@ -7,7 +7,9 @@ final class TaskInitial extends TaskState {}
 
 final class TaskLoading extends TaskState {}
 
-final class TaskSuccess extends TaskState {}
+final class TaskSuccess extends TaskState {
+  
+}
 
 final class TaskError extends TaskState {
   final String errorMessage;

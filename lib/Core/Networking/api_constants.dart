@@ -4,4 +4,5 @@ class ApiConstants {
   static const String loginrUrl = 'auth/login';
   static const String profilerUrl = 'auth/profile';
   static const String logoutrUrl = 'auth/logout';
+  static const String taskesrUrl = 'todos';
 }

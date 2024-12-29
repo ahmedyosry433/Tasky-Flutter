@@ -4,7 +4,8 @@ class ProfileRepo {
   ApiService _apiService;
   ProfileRepo(this._apiService);
 
-  Future getProfile({required String token}) async {
-    return await _apiService.profile(token: token);
+  Future getProfile() async {
+    return await _apiService.profile();
   }
+  
 }

@@ -1,39 +1,41 @@
-class Task {
+class TaskModel {
+  final String id;
   final String title;
   final String description;
-  final TaskPriority priority;
-  final DateTime? dueDate;
+  final String priority;
   final String? imageUrl;
+  final String status;
 
-  Task({
+  TaskModel({
+    required this.id,
     required this.title,
     required this.description,
     required this.priority,
-    this.dueDate,
-    this.imageUrl,
+    required this.imageUrl,
+    required this.status,
   });
-
-  Map<String, dynamic> toJson() {
-    return {
-      'title': title,
-      'description': description,
-      'priority': priority.index,
-      'dueDate': dueDate?.toIso8601String(),
-      'imageUrl': imageUrl,
-    };
-  }
-
-  factory Task.fromJson(Map<String, dynamic> json) {
-    return Task(
+  factory TaskModel.fromJson(Map<String, dynamic> json) {
+    return TaskModel(
+      id: json['_id'],
       title: json['title'],
-      description: json['description'],
-      priority: TaskPriority.values[json['priority']],
-      dueDate: json['dueDate'] != null ? DateTime.parse(json['dueDate']) : null,
-      imageUrl: json['imageUrl'],
+      description: json['desc'],
+      priority: json['priority'],
+      imageUrl: json['image'],
+      status: json['status'],
     );
   }
-  
+  Map<String, dynamic> toJson() {
+    return {
+      '_id': id,
+      'title': title,
+      'desc': description,
+      'priority': priority,
+      'image': imageUrl,
+      'status': status,
+    };
+  }
 }
+
 enum TaskPriority {
   low,
   medium,
@@ -49,5 +51,4 @@ enum TaskPriority {
         return 'High Priority';
     }
   }
-
 }

@@ -18,8 +18,7 @@ class ProfileCubit extends Cubit<ProfileState> {
   void getProfile() async {
     emit(ProfileLoading());
     try {
-      String token = await SharedPreferencesHelper.getValueForKey("token");
-      final res = await _profileRepo.getProfile(token: token);
+      final res = await _profileRepo.getProfile();
       displayName = res["displayName"];
       phone = res["username"];
       level = res["level"];

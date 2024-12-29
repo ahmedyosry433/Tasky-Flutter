@@ -6,6 +6,7 @@ import 'package:tasky/Core/Helper/spacing.dart';
 import 'package:tasky/Core/Router/routes.dart';
 import 'package:tasky/Core/Theme/colors.dart';
 import 'package:tasky/Core/Theme/style.dart';
+import 'package:tasky/Features/Taskes/Data/Model/task_model.dart';
 import 'package:tasky/Features/Taskes/Logic/cubit/task_cubit.dart';
 
 class TaskListScreen extends StatefulWidget {
@@ -16,40 +17,14 @@ class TaskListScreen extends StatefulWidget {
 }
 
 class _TaskListScreenState extends State<TaskListScreen> {
+  @override
+  void initState() {
+    super.initState();
+    BlocProvider.of<TaskCubit>(context).tasksListCubit();
+  }
+
   int selectedFilter = 0;
   final List<String> filters = ['All', 'Inprogress', 'Waiting', 'Finished'];
-
-  // Sample task data
-  final List<Map<String, dynamic>> tasks = [
-    {
-      'title': 'Grocery Shopping...',
-      'description': 'This application is designed for s...',
-      'priority': 'Medium',
-      'status': 'Waiting',
-      'date': '30/12/2022'
-    },
-    {
-      'title': 'Grocery Shopping...',
-      'description': 'This application is designed for s...',
-      'priority': 'Low',
-      'status': 'Waiting',
-      'date': '30/12/2022'
-    },
-    {
-      'title': 'Grocery Shopping...',
-      'description': 'This application is designed for s...',
-      'priority': 'High',
-      'status': 'Inprogress',
-      'date': '30/12/2022'
-    },
-    {
-      'title': 'Grocery Shopping...',
-      'description': 'This application is designed for s...',
-      'priority': 'Medium',
-      'status': 'Finished',
-      'date': '30/12/2022'
-    },
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -86,6 +61,8 @@ class _TaskListScreenState extends State<TaskListScreen> {
                             onTap: () async {
                               setState(() {
                                 selectedFilter = index;
+                                BlocProvider.of<TaskCubit>(context)
+                                    .filterTasksByStatus(filters[index]);
                               });
                             },
                             child: Container(
@@ -112,18 +89,35 @@ class _TaskListScreenState extends State<TaskListScreen> {
                         }),
                   ),
                 ),
-                // Task List
-                Expanded(
-                  child: ListView.builder(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    itemCount: tasks.length,
-                    itemBuilder: (context, index) {
-                      final task = tasks[index];
-                      return _buildTaskCard(task, () {
-                        context.pushNamed(Routes.taskDetailsScreen);
-                      });
-                    },
-                  ),
+                BlocBuilder<TaskCubit, TaskState>(
+                  builder: (context, state) {
+                    if (state is TaskLoading) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                    if (state is TaskSuccess) {
+                      return Expanded(
+                        child: ListView.builder(
+                          padding: EdgeInsets.symmetric(horizontal: 16.w),
+                          itemCount: BlocProvider.of<TaskCubit>(context)
+                              .tasksList
+                              .length,
+                          itemBuilder: (context, index) {
+                            return _buildTaskCard(
+                                BlocProvider.of<TaskCubit>(context)
+                                    .tasksList[index], () {
+                              context.pushNamed(Routes.taskDetailsScreen);
+                            });
+                          },
+                        ),
+                      );
+                    }
+                    if (state is TaskError) {
+                      return Center(
+                        child: Text(state.errorMessage.toString()),
+                      );
+                    }
+                    return const SizedBox.shrink();
+                  },
                 ),
               ],
             ),
@@ -172,52 +166,16 @@ class _TaskListScreenState extends State<TaskListScreen> {
     );
   }
 
-  Widget _buildAppbar() {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            'Logo',
-            style: TextStyles.font24BlackBold,
-          ),
-          Row(
-            children: [
-              IconButton(
-                  onPressed: () {
-                    context.pushNamed(Routes.profileScreen);
-                  },
-                  icon: Icon(
-                    Icons.account_circle_outlined,
-                    color: Colors.black,
-                    size: 25.r,
-                  )),
-              horizontalSpace(16),
-              IconButton(
-                onPressed: () {
-                  BlocProvider.of<TaskCubit>(context).logoutCubit();
-                },
-                icon: Icon(Icons.logout,
-                    color: ColorsManager.primryColor, size: 25.r),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildTaskCard(Map<String, dynamic> task, void Function()? onTap) {
+  Widget _buildTaskCard(TaskModel task, void Function()? onTap) {
     Color statusColor;
-    switch (task['status']) {
-      case 'Waiting':
+    switch (task.status.toLowerCase()) {
+      case 'waiting':
         statusColor = ColorsManager.waitingColor;
         break;
-      case 'Inprogress':
+      case 'inprogress':
         statusColor = ColorsManager.primryColor;
         break;
-      case 'Finished':
+      case 'finished':
         statusColor = Colors.blue;
         break;
       default:
@@ -225,7 +183,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
     }
 
     Color priorityColor;
-    switch (task['priority'].toString().toLowerCase()) {
+    switch (task.priority.toLowerCase()) {
       case 'high':
         priorityColor = Colors.orange;
         break;
@@ -266,7 +224,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Expanded(
-                          child: Text(task['title'],
+                          child: Text(task.title,
                               style: TextStyles.font14BlackBold),
                         ),
                         Container(
@@ -279,7 +237,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
                             borderRadius: BorderRadius.circular(12.r),
                           ),
                           child: Text(
-                            task['status'],
+                            task.status,
                             style: TextStyle(color: statusColor),
                           ),
                         ),
@@ -290,7 +248,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
                     ),
                     verticalSpace(7),
                     Text(
-                      task['description'],
+                      task.description,
                       style: TextStyles.font14GrayRegular,
                     ),
                     verticalSpace(7),
@@ -303,13 +261,13 @@ class _TaskListScreenState extends State<TaskListScreen> {
                                 size: 16, color: priorityColor),
                             horizontalSpace(4),
                             Text(
-                              task['priority'],
+                              task.priority,
                               style: TextStyle(color: priorityColor),
                             ),
                           ],
                         ),
                         Text(
-                          task['date'],
+                          '12/12/2024',
                           style: TextStyles.font14GrayRegular,
                         ),
                       ],
@@ -320,6 +278,42 @@ class _TaskListScreenState extends State<TaskListScreen> {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildAppbar() {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            'Logo',
+            style: TextStyles.font24BlackBold,
+          ),
+          Row(
+            children: [
+              IconButton(
+                  onPressed: () {
+                    context.pushNamed(Routes.profileScreen);
+                  },
+                  icon: Icon(
+                    Icons.account_circle_outlined,
+                    color: Colors.black,
+                    size: 25.r,
+                  )),
+              horizontalSpace(16),
+              IconButton(
+                onPressed: () {
+                  BlocProvider.of<TaskCubit>(context).logoutCubit();
+                },
+                icon: Icon(Icons.logout,
+                    color: ColorsManager.primryColor, size: 25.r),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
