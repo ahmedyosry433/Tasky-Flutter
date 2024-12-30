@@ -1,9 +1,11 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 import 'package:tasky/Core/Helper/extensions.dart';
 import 'package:tasky/Core/Helper/spacing.dart';
 import 'package:tasky/Core/Router/routes.dart';
@@ -76,12 +78,21 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
                           ),
                           verticalSpace(20),
                           Center(
-                            child: Image.asset(
-                              'assets/image/qr.png',
-                              width: 200.w,
-                              height: 200.h,
+                            child: QrImageView(
+                              data: jsonEncode(
+                                  BlocProvider.of<TaskCubit>(context).oneTask),
+                              version: QrVersions.auto,
+                              size: 250.r,
+                              backgroundColor: Colors.white,
                             ),
                           ),
+                          // Center(
+                          //   child: Image.asset(
+                          //     'assets/image/qr.png',
+                          //     width: 200.w,
+                          //     height: 200.h,
+                          //   ),
+                          // ),
                         ],
                       );
                     } else {
