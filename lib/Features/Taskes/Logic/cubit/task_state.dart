@@ -67,3 +67,13 @@ final class AddTaskError extends TaskState {
 
   AddTaskError(this.errorMessage);
 }
+
+final class AddTaskByQrCodeLoading extends TaskState {}
+
+final class AddTaskByQrCodeSuccess extends TaskState {}
+
+final class AddTaskByQrCodeError extends TaskState {
+  final String errorMessage;
+
+  AddTaskByQrCodeError(this.errorMessage);
+}

@@ -45,14 +45,14 @@ class AddTaskModel {
   String title;
   String desc;
   String priority;
-  String dueDate;
+  String? dueDate;
 
   AddTaskModel({
     required this.image,
     required this.title,
     required this.desc,
     required this.priority,
-    required this.dueDate,
+    this.dueDate,
   });
 
   factory AddTaskModel.fromJson(Map<String, dynamic> json) {
@@ -61,7 +61,7 @@ class AddTaskModel {
       title: json['title'],
       desc: json['desc'],
       priority: json['priority'],
-      dueDate: json['dueDate'],
+      dueDate: json['dueDate']
     );
   }
 

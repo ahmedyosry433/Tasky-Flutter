@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -79,20 +78,14 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
                           verticalSpace(20),
                           Center(
                             child: QrImageView(
-                              data: jsonEncode(
-                                  BlocProvider.of<TaskCubit>(context).oneTask),
+                              data: BlocProvider.of<TaskCubit>(context)
+                                  .oneTask!
+                                  .id,
                               version: QrVersions.auto,
                               size: 250.r,
                               backgroundColor: Colors.white,
                             ),
                           ),
-                          // Center(
-                          //   child: Image.asset(
-                          //     'assets/image/qr.png',
-                          //     width: 200.w,
-                          //     height: 200.h,
-                          //   ),
-                          // ),
                         ],
                       );
                     } else {

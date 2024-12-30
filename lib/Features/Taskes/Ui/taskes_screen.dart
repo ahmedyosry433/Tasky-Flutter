@@ -1,9 +1,11 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:qr_code_dart_scan/qr_code_dart_scan.dart';
 import 'package:tasky/Core/Helper/extensions.dart';
 import 'package:tasky/Core/Helper/spacing.dart';
 import 'package:tasky/Core/Router/routes.dart';
@@ -25,6 +27,8 @@ class _TaskListScreenState extends State<TaskListScreen> {
     super.initState();
     BlocProvider.of<TaskCubit>(context).tasksListCubit();
   }
+
+  bool isScanning = false;
 
   int selectedFilter = 0;
   final List<String> filters = ['All', 'Inprogress', 'Waiting', 'Finished'];
@@ -344,7 +348,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
               borderRadius: BorderRadius.circular(50),
             ),
             heroTag: 'qr',
-            onPressed: () {},
+            onPressed: _showScanner,
             backgroundColor: ColorsManager.lightPrimryColor,
             mini: true,
             child: const Icon(
@@ -567,6 +571,86 @@ class _TaskListScreenState extends State<TaskListScreen> {
             BlocProvider.of<TaskCubit>(context).tasksListCubit();
           } else if (state is EditTaskError) {
             Text("EDIT ERROR _${state.errorMessage}");
+          }
+        },
+        child: const SizedBox.shrink());
+  }
+
+  void _showScanner() {
+    setState(() {
+      isScanning = true;
+    });
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BottmSheetcontext) => Container(
+        height: MediaQuery.of(BottmSheetcontext).size.height * 0.8,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
+        ),
+        child: Column(
+          children: [
+            AppBar(
+              backgroundColor: ColorsManager.primryColor,
+              elevation: 0,
+              title: const Text('Scan QR Code'),
+              leading: IconButton(
+                icon: const Icon(Icons.close),
+                onPressed: () {
+                  Navigator.pop(BottmSheetcontext);
+                  setState(() {
+                    isScanning = false;
+                  });
+                },
+              ),
+            ),
+            Expanded(
+              child: QRCodeDartScanView(
+                scanInvertedQRCode: true,
+                typeScan: TypeScan.live,
+                formats: const [
+                  BarcodeFormat.qrCode,
+                  BarcodeFormat.aztec,
+                  BarcodeFormat.dataMatrix,
+                  BarcodeFormat.pdf417,
+                  BarcodeFormat.code39,
+                  BarcodeFormat.code93,
+                  BarcodeFormat.code128,
+                  BarcodeFormat.ean8,
+                  BarcodeFormat.ean13,
+                ],
+                onCapture: (Result result) {
+                  setState(() {
+                    isScanning = false;
+                  });
+
+                  BlocProvider.of<TaskCubit>(context)
+                      .addTaskByQrCode(scannedResult: result.text);
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildQrCodeBlocLisener() {
+    return BlocListener<TaskCubit, TaskState>(
+        listenWhen: (previous, current) => previous != current,
+        listener: (context, state) {
+          if (state is AddTaskByQrCodeLoading) {
+            const Center(
+              child: CircularProgressIndicator(),
+            );
+          } else if (state is AddTaskByQrCodeSuccess) {
+            context.pushReplacementNamed(Routes.taskesScreen);
+          } else if (state is AddTaskByQrCodeError) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Scanned: ${state.errorMessage}')),
+            );
           }
         },
         child: const SizedBox.shrink());

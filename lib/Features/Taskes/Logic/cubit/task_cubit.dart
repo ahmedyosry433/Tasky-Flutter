@@ -109,8 +109,28 @@ class TaskCubit extends Cubit<TaskState> {
 
       emit(AddTaskSuccess());
     } catch (e) {
-      print("____________Error: " + e.toString());
       emit(AddTaskError(e.toString()));
+    }
+  }
+
+  void addTaskByQrCode({required String scannedResult}) async {
+    emit(AddTaskByQrCodeLoading());
+    try {
+      TaskModel res = await _taskRepo.getOneTaskRepo(
+          taskID: scannedResult.replaceAll('"', ''));
+
+      await _taskRepo.addTaskRepo(
+        task: AddTaskModel(
+          image: res.imageUrl,
+          title: res.title,
+          desc: res.description,
+          priority: res.priority,
+        ),
+      );
+      emit(AddTaskByQrCodeSuccess());
+    } catch (e) {
+      print("________________________________________${e.toString()}");
+      emit(AddTaskByQrCodeError(e.toString()));
     }
   }
 }
