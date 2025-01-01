@@ -63,6 +63,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
               _buildLogoutBlocLisener(context),
               _buildDeleteBlocLisener(),
               _buildEditBlocLisener(),
+              _buildQrCodeBlocLisener(),
             ],
           ),
         ),
@@ -593,7 +594,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
         child: Column(
           children: [
             AppBar(
-              backgroundColor: ColorsManager.primryColor,
+              backgroundColor: ColorsManager.lightPrimryColor,
               elevation: 0,
               title: const Text('Scan QR Code'),
               leading: IconButton(
@@ -609,7 +610,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
             Expanded(
               child: QRCodeDartScanView(
                 scanInvertedQRCode: true,
-                typeScan: TypeScan.live,
+                typeScan: TypeScan.takePicture,
                 formats: const [
                   BarcodeFormat.qrCode,
                   BarcodeFormat.aztec,
@@ -628,6 +629,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
 
                   BlocProvider.of<TaskCubit>(context)
                       .addTaskByQrCode(scannedResult: result.text);
+                  Navigator.pop(BottmSheetcontext);
                 },
               ),
             ),
@@ -646,7 +648,8 @@ class _TaskListScreenState extends State<TaskListScreen> {
               child: CircularProgressIndicator(),
             );
           } else if (state is AddTaskByQrCodeSuccess) {
-            context.pushReplacementNamed(Routes.taskesScreen);
+            BlocProvider.of<TaskCubit>(context).tasksListCubit();
+            // context.pushNamed(Routes.taskesScreen);
           } else if (state is AddTaskByQrCodeError) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text('Scanned: ${state.errorMessage}')),
