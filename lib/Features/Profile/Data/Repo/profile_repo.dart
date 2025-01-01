@@ -5,7 +5,6 @@ class ProfileRepo {
   ProfileRepo(this._apiService);
 
   Future getProfile() async {
-    return await _apiService.profile();
+    return _apiService.profile();
   }
-  
 }

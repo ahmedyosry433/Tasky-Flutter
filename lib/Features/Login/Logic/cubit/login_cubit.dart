@@ -27,6 +27,9 @@ class LoginCubit extends Cubit<LoginState> {
       );
       await SharedPreferencesHelper.setValueForKey(
           'token', response["access_token"]);
+          
+      await SharedPreferencesHelper.setValueForKey(
+          'reftoken', response["refresh_token"]);
       emit(LoginSuccess());
       phoneController.clear();
     } catch (e) {

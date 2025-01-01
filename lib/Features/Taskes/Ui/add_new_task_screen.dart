@@ -94,7 +94,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
         });
       }
     } catch (e) {
-      print("________________From Image Pick __$e");
+      throw Exception(e);
     }
   }
 

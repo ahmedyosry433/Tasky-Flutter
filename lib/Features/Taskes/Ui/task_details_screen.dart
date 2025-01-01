@@ -244,7 +244,6 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
   }
 
   void showEditDialog(BuildContext context, TaskModel task) {
-    // Controllers for form fields
     final oneTask = BlocProvider.of<TaskCubit>(context).oneTask!;
     TextEditingController titleController =
         TextEditingController(text: oneTask.title);
@@ -358,7 +357,6 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
                         imageUrl: imagePath,
                         status: selectedStatus,
                         userId: task.userId));
-                print("____DONE__________");
                 dialogContext.pop();
               },
               child: Text(

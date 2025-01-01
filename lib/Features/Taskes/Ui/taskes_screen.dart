@@ -11,6 +11,7 @@ import 'package:tasky/Core/Helper/spacing.dart';
 import 'package:tasky/Core/Router/routes.dart';
 import 'package:tasky/Core/Theme/colors.dart';
 import 'package:tasky/Core/Theme/style.dart';
+import 'package:tasky/Core/Widgets/app_text_button.dart';
 import 'package:tasky/Features/Taskes/Data/Model/task_model.dart';
 import 'package:tasky/Features/Taskes/Logic/cubit/task_cubit.dart';
 
@@ -329,7 +330,13 @@ class _TaskListScreenState extends State<TaskListScreen> {
         }
         if (state is TaskError) {
           return Center(
-            child: Text(state.errorMessage.toString()),
+            child: Padding(
+              padding: EdgeInsets.only(top: 20.h),
+              child: Text(
+                'Something went wrong.',
+                style: TextStyles.font18BlackBold,
+              ),
+            ),
           );
         }
         return const SizedBox.shrink();
@@ -448,6 +455,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
                     final picker = ImagePicker();
                     final pickedFile =
                         await picker.pickImage(source: ImageSource.gallery);
+
                     if (pickedFile != null) {
                       setState(() {
                         imagePath = pickedFile.path;
@@ -526,15 +534,17 @@ class _TaskListScreenState extends State<TaskListScreen> {
             TextButton(
               onPressed: () {
                 BlocProvider.of<TaskCubit>(context).editTaskCubit(
-                    task: TaskModel(
-                        id: task.id,
-                        title: titleController.text,
-                        description: descController.text,
-                        priority: selectedPriority,
-                        imageUrl: imagePath,
-                        status: selectedStatus,
-                        userId: task.userId));
-                print("____DONE__________");
+                  task: TaskModel(
+                      id: task.id,
+                      title: titleController.text,
+                      description: descController.text,
+                      priority: selectedPriority,
+                      imageUrl: imagePath,
+                      status: selectedStatus,
+                      userId: task.userId),
+                );
+                BlocProvider.of<TaskCubit>(context)
+                    .uploadImageCubit(imagePickedUrl: imagePath);
                 dialogContext.pop();
               },
               child: Text(
@@ -554,7 +564,9 @@ class _TaskListScreenState extends State<TaskListScreen> {
         if (state is DeleteTaskLoading) {
         } else if (state is DeleteTaskSuccess) {
           context.pushReplacementNamed(Routes.taskesScreen);
-        } else if (state is DeleteTaskError) {}
+        } else if (state is DeleteTaskError) {
+          context.pushReplacementNamed(Routes.loginScreen);
+        }
       },
       child: const SizedBox.shrink(),
     );
@@ -629,7 +641,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
 
                   BlocProvider.of<TaskCubit>(context)
                       .addTaskByQrCode(scannedResult: result.text);
-                  Navigator.pop(BottmSheetcontext);
+                  BottmSheetcontext.pop();
                 },
               ),
             ),

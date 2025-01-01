@@ -16,6 +16,10 @@ class ApiService {
     return await SharedPreferencesHelper.getValueForKey('token');
   }
 
+  Future<String> getRefreshToken() async {
+    return await SharedPreferencesHelper.getValueForKey('reftoken');
+  }
+
   Future register({required UserModel registerModel}) async {
     var headers = {
       'Content-Type': 'application/json',
@@ -44,106 +48,206 @@ class ApiService {
     return response.data;
   }
 
-  Future profile() async {
-    var headers = {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer ${await getToken()}',
-    };
-    Response response =
-        await _dio.request(ApiConstants.apiBaseUrl + ApiConstants.profilerUrl,
-            options: Options(
-              headers: headers,
-              method: 'GET',
-            ));
-    return response.data;
-  }
-
-  Future logout() async {
-    var headers = {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer ${await getToken()}',
-    };
-    Response response =
-        await _dio.request(ApiConstants.apiBaseUrl + ApiConstants.logoutrUrl,
-            options: Options(
-              headers: headers,
-              method: 'POST',
-            ));
-    return response.data;
-  }
-
-  Future<List<TaskModel>> tasksList() async {
-    var headers = {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer ${await getToken()}',
-    };
-    Response response =
-        await _dio.request(ApiConstants.apiBaseUrl + ApiConstants.taskesrUrl,
-            options: Options(
-              headers: headers,
-              method: 'GET',
-            ));
-    List<TaskModel> tasksList = [];
-    for (var task in response.data) {
-      tasksList.add(TaskModel.fromJson(task));
-    }
-    return tasksList;
-  }
-
-  Future<TaskModel> deleteTask({required String taskID}) async {
+  Future refreshToken() async {
     var headers = {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer ${await getToken()}',
     };
     Response response = await _dio.request(
-        "${ApiConstants.apiBaseUrl}${ApiConstants.taskesrUrl}/$taskID",
-        options: Options(
-          headers: headers,
-          method: 'DELETE',
-        ));
-    return TaskModel.fromJson(response.data);
-  }
-
-  Future<TaskModel> getOneTask({required String taskID}) async {
-    var headers = {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer ${await getToken()}',
-    };
-    Response response = await _dio.request(
-        "${ApiConstants.apiBaseUrl}${ApiConstants.taskesrUrl}/$taskID",
+        "${ApiConstants.apiBaseUrl}${ApiConstants.refreshToken}${await getRefreshToken()}",
         options: Options(
           headers: headers,
           method: 'GET',
         ));
-    return TaskModel.fromJson(response.data);
+    await SharedPreferencesHelper.setValueForKey(
+        "token", "${response.data["access_token"]}");
+
+    return response;
   }
 
-  Future<TaskModel> editTask({required TaskModel task}) async {
-    var headers = {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer ${await getToken()}',
-    };
-    Response response = await _dio.request(
-        "${ApiConstants.apiBaseUrl}${ApiConstants.taskesrUrl}/${task.id}",
-        data: task,
+  Future profile() async {
+    try {
+      var headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ${await getToken()}',
+      };
+      Response response = await _dio.request(
+        ApiConstants.apiBaseUrl + ApiConstants.profilerUrl,
         options: Options(
           headers: headers,
-          method: 'PUT',
-        ));
-    return TaskModel.fromJson(response.data);
+          method: 'GET',
+        ),
+      );
+      return response.data;
+    } on DioException catch (e) {
+      if (e.response!.statusCode == 401) {
+        await refreshToken();
+
+        return profile;
+      }
+    }
+  }
+
+  Future logout() async {
+    try {
+      var headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ${await getToken()}',
+      };
+      Response response =
+          await _dio.request(ApiConstants.apiBaseUrl + ApiConstants.logoutrUrl,
+              options: Options(
+                headers: headers,
+                method: 'POST',
+              ));
+
+      return response;
+    } on DioException catch (e) {
+      if (e.response!.statusCode == 401) {
+        await refreshToken();
+        return logout();
+      }
+    }
+  }
+
+  Future tasksList() async {
+    try {
+      var headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ${await getToken()}',
+      };
+      Response response =
+          await _dio.request(ApiConstants.apiBaseUrl + ApiConstants.taskesrUrl,
+              options: Options(
+                headers: headers,
+                method: 'GET',
+              ));
+
+      return response;
+    } on DioException catch (e) {
+      if (e.response!.statusCode == 401) {
+        await refreshToken();
+        return tasksList;
+      }
+    }
+  }
+
+  Future deleteTask({required String taskID}) async {
+    try {
+      var headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ${await getToken()}',
+      };
+      Response response = await _dio.request(
+          "${ApiConstants.apiBaseUrl}${ApiConstants.taskesrUrl}/$taskID",
+          options: Options(
+            headers: headers,
+            method: 'DELETE',
+          ));
+
+      return response;
+    } on DioException catch (e) {
+      if (e.response!.statusCode == 401) {
+        await refreshToken();
+        return deleteTask(taskID: taskID);
+      }
+    }
+  }
+
+  Future getOneTask({required String taskID}) async {
+    try {
+      var headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ${await getToken()}',
+      };
+      Response response = await _dio.request(
+          "${ApiConstants.apiBaseUrl}${ApiConstants.taskesrUrl}/$taskID",
+          options: Options(
+            headers: headers,
+            method: 'GET',
+          ));
+
+      return response;
+    } on DioException catch (e) {
+      if (e.response!.statusCode == 401) {
+        await refreshToken();
+        return getOneTask(taskID: taskID);
+      }
+    }
+  }
+
+  Future editTask({required TaskModel task}) async {
+    try {
+      var headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ${await getToken()}',
+      };
+      Response response = await _dio.request(
+          "${ApiConstants.apiBaseUrl}${ApiConstants.taskesrUrl}/${task.id}",
+          data: task,
+          options: Options(
+            headers: headers,
+            method: 'PUT',
+          ));
+
+      return response;
+    } on DioException catch (e) {
+      if (e.response!.statusCode == 401) {
+        await refreshToken();
+        return editTask(task: task);
+      }
+    }
   }
 
   Future addTask({required AddTaskModel addTask}) async {
-    var headers = {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer ${await getToken()}',
-    };
-    await _dio.request("${ApiConstants.apiBaseUrl}${ApiConstants.taskesrUrl}",
-        data: addTask,
-        options: Options(
-          headers: headers,
-          method: 'POST',
-        ));
-    ;
+    try {
+      var headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ${await getToken()}',
+      };
+      var response = await _dio.request(
+          "${ApiConstants.apiBaseUrl}${ApiConstants.taskesrUrl}",
+          data: addTask,
+          options: Options(
+            headers: headers,
+            method: 'POST',
+          ));
+      return response;
+    } on DioException catch (e) {
+      if (e.response!.statusCode == 401) {
+        await refreshToken();
+        return addTask;
+      }
+    }
+  }
+
+  Future uploadImage({required String imagePath}) async {
+    try {
+      var headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ${await getToken()}',
+      };
+      final formData = FormData.fromMap({
+        'image': await MultipartFile.fromFile(imagePath,
+            filename: 'uploaded_image.jpg'),
+      });
+      Response response = await _dio.request(
+          "${ApiConstants.apiBaseUrl}/${ApiConstants.uploadImage}",
+          data: formData,
+          options: Options(
+            headers: headers,
+            method: 'POST',
+          ));
+
+      print("_________RESPONSE FROM UPLOAD IMAGE____R_____$response");
+      print("_________RESPONSE FROM UPLOAD IMAGE____D_____${response.data}");
+      print(
+          "_________RESPONSE FROM UPLOAD IMAGE____S_____${response.statusCode}");
+    } on DioException catch (e) {
+      if (e.response!.statusCode == 401) {
+        await refreshToken();
+        return uploadImage(imagePath: imagePath);
+      }
+    }
   }
 }

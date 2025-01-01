@@ -41,6 +41,8 @@ class RegisterCubit extends Cubit<RegisterState> {
 
       await SharedPreferencesHelper.setValueForKey(
           'token', res['access_token']);
+      await SharedPreferencesHelper.setValueForKey(
+          'reftoken', res["refresh_token"]);
       emit(RegisterSuccess());
     } catch (e) {
       emit(RegisterError(errorMessage: e.toString()));

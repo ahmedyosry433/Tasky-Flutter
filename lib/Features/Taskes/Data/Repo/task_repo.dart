@@ -9,23 +9,31 @@ class TaskRepo {
     return _api_service.logout();
   }
 
-  Future<List<TaskModel>> tasksListRepo() {
+  Future tasksListRepo() {
     return _api_service.tasksList();
   }
 
-  Future<TaskModel> deleteTaskRepo({required String taskID}) {
+  Future deleteTaskRepo({required String taskID}) {
     return _api_service.deleteTask(taskID: taskID);
   }
 
-  Future<TaskModel> getOneTaskRepo({required String taskID}) {
+  Future getOneTaskRepo({required String taskID}) {
     return _api_service.getOneTask(taskID: taskID);
   }
 
-  Future<TaskModel> editTaskRepo({required TaskModel task}) {
+  Future editTaskRepo({required TaskModel task}) {
     return _api_service.editTask(task: task);
   }
 
   Future addTaskRepo({required AddTaskModel task}) {
     return _api_service.addTask(addTask: task);
+  }
+
+  Future uploadImageRepo({required String ImagePath}) {
+    return _api_service.uploadImage(imagePath: ImagePath);
+  }
+
+  Future refreshTokenRepo() {
+    return _api_service.refreshToken();
   }
 }

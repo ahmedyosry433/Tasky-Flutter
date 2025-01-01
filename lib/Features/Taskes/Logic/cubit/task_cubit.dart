@@ -36,9 +36,12 @@ class TaskCubit extends Cubit<TaskState> {
   void tasksListCubit() async {
     emit(TaskLoading());
     try {
-      var tasks = await _taskRepo.tasksListRepo();
-      allTasks = tasks;
-      tasksList = tasks;
+      var res = await _taskRepo.tasksListRepo();
+
+      for (var task in res.data) {
+        allTasks.add(TaskModel.fromJson(task));
+      }
+      tasksList = allTasks;
 
       emit(TaskSuccess());
     } catch (e) {
@@ -131,6 +134,16 @@ class TaskCubit extends Cubit<TaskState> {
     } catch (e) {
       print("________________________________________${e.toString()}");
       emit(AddTaskByQrCodeError(e.toString()));
+    }
+  }
+
+  void uploadImageCubit({required String imagePickedUrl}) async {
+    try {
+      await _taskRepo.uploadImageRepo(ImagePath: imagePickedUrl);
+
+      print("____________________ IMAGE UPLOADED ____________Done__________");
+    } catch (e) {
+      print("_________Error From Dio________${e.toString()}");
     }
   }
 }

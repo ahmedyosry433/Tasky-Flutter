@@ -17,7 +17,8 @@ class ProfileCubit extends Cubit<ProfileState> {
   void getProfile() async {
     emit(ProfileLoading());
     try {
-      final res = await _profileRepo.getProfile();
+      var res = await _profileRepo.getProfile();
+
       displayName = res["displayName"];
       phone = res["username"];
       level = res["level"];
