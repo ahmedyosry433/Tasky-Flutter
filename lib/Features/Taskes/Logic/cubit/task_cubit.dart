@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
@@ -6,6 +7,7 @@ import 'package:intl/intl.dart';
 import 'package:meta/meta.dart';
 import 'package:tasky/Features/Taskes/Data/Model/task_model.dart';
 import 'package:tasky/Features/Taskes/Data/Repo/task_repo.dart';
+import 'package:image/image.dart' as img;
 
 part 'task_state.dart';
 
@@ -17,11 +19,14 @@ class TaskCubit extends Cubit<TaskState> {
   TextEditingController descController = TextEditingController();
   String? selectedPriority = 'low';
   File? imagePickedUrl;
+  File? compressedImagePickedUrl;
   DateTime? dueDate;
 
   List<TaskModel> tasksList = [];
   List<TaskModel> allTasks = [];
   TaskModel? oneTask;
+  String? addImageUploadedName;
+  String? editImageUploadedName;
 
   void logoutCubit() async {
     emit(LogoutLoading());
@@ -71,7 +76,9 @@ class TaskCubit extends Cubit<TaskState> {
     emit(OneTaskLoading());
     try {
       TaskModel res = await _taskRepo.getOneTaskRepo(taskID: taskId);
+
       oneTask = res;
+
       emit(OneTaskSuccess(res));
     } catch (e) {
       emit(OneTaskError(e.toString()));
@@ -103,7 +110,7 @@ class TaskCubit extends Cubit<TaskState> {
     try {
       await _taskRepo.addTaskRepo(
         task: AddTaskModel(
-            image: imagePickedUrl!.path,
+            image: addImageUploadedName!,
             title: titleController.text,
             desc: descController.text,
             priority: selectedPriority!,
@@ -132,18 +139,53 @@ class TaskCubit extends Cubit<TaskState> {
       );
       emit(AddTaskByQrCodeSuccess());
     } catch (e) {
-      print("________________________________________${e.toString()}");
       emit(AddTaskByQrCodeError(e.toString()));
     }
   }
 
-  void uploadImageCubit({required String imagePickedUrl}) async {
+  void uploadImageCubit(
+      {required File imagePath, required String editOrAdd}) async {
     try {
-      await _taskRepo.uploadImageRepo(ImagePath: imagePickedUrl);
+      File? compressedImage = await reduceImageQuality(imageFile: imagePath);
 
-      print("____________________ IMAGE UPLOADED ____________Done__________");
+      var res =
+          await _taskRepo.uploadImageRepo(ImagePath: compressedImage!.path);
+      if (editOrAdd == "add") {
+        addImageUploadedName = res['image'];
+      } else if (editOrAdd == "edit") {
+        editImageUploadedName = res['image'];
+      }
+
+      print(
+          "____________________ IMAGE UPLOADED _______${addImageUploadedName}");
+      print(
+          "____________________ IMAGE UPLOADED _______${editImageUploadedName}");
     } catch (e) {
-      print("_________Error From Dio________${e.toString()}");
+      throw Exception(e);
     }
+  }
+
+  Future<File?> reduceImageQuality({required File imageFile}) async {
+    try {
+      // Read the image file as bytes
+      final bytes = await imageFile.readAsBytes();
+      final decodedImage = img.decodeImage(bytes);
+
+      if (decodedImage != null) {
+        // Compress the image with reduced quality
+        final compressedBytes =
+            img.encodeJpg(decodedImage, quality: 50); // Lower quality
+
+        // Save the compressed image to a temporary file
+        final tempDir = Directory.systemTemp;
+        final tempFile =
+            File('${tempDir.path}/${imageFile.path.split('/').last}');
+        await tempFile.writeAsBytes(Uint8List.fromList(compressedBytes));
+        return tempFile;
+      }
+    } catch (e) {
+      print("______________Error during image compression: $e");
+    }
+    return null;
   }
 }

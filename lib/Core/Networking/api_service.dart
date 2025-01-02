@@ -3,11 +3,14 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:dio/dio.dart';
+import 'package:http_parser/http_parser.dart';
 import 'package:tasky/Core/Networking/api_constants.dart';
 import 'package:tasky/Features/Login/Data/Model/login_model.dart';
 import 'package:tasky/Features/Register/Data/Model/register_model.dart';
 import 'package:tasky/Features/Taskes/Data/Model/task_model.dart';
 import '../Helper/shared_preferences_helper.dart';
+import 'package:mime_type/mime_type.dart';
+import 'package:http/http.dart' as http;
 
 class ApiService {
   final Dio _dio;
@@ -127,7 +130,7 @@ class ApiService {
     } on DioException catch (e) {
       if (e.response!.statusCode == 401) {
         await refreshToken();
-        return tasksList;
+        return tasksList();
       }
     }
   }
@@ -160,6 +163,7 @@ class ApiService {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ${await getToken()}',
       };
+
       Response response = await _dio.request(
           "${ApiConstants.apiBaseUrl}${ApiConstants.taskesrUrl}/$taskID",
           options: Options(
@@ -167,13 +171,15 @@ class ApiService {
             method: 'GET',
           ));
 
-      return response;
+      return TaskModel.fromJson(response.data);
     } on DioException catch (e) {
-      if (e.response!.statusCode == 401) {
+      if (e.response != null && e.response!.statusCode == 401) {
         await refreshToken();
         return getOneTask(taskID: taskID);
       }
     }
+
+    return getOneTask(taskID: taskID);
   }
 
   Future editTask({required TaskModel task}) async {
@@ -224,25 +230,30 @@ class ApiService {
   Future uploadImage({required String imagePath}) async {
     try {
       var headers = {
-        'Content-Type': 'application/json',
         'Authorization': 'Bearer ${await getToken()}',
       };
-      final formData = FormData.fromMap({
-        'image': await MultipartFile.fromFile(imagePath,
-            filename: 'uploaded_image.jpg'),
-      });
-      Response response = await _dio.request(
-          "${ApiConstants.apiBaseUrl}/${ApiConstants.uploadImage}",
-          data: formData,
-          options: Options(
-            headers: headers,
-            method: 'POST',
-          ));
+      final fileExtension = imagePath.split('.').last.toLowerCase();
 
-      print("_________RESPONSE FROM UPLOAD IMAGE____R_____$response");
-      print("_________RESPONSE FROM UPLOAD IMAGE____D_____${response.data}");
-      print(
-          "_________RESPONSE FROM UPLOAD IMAGE____S_____${response.statusCode}");
+      var data = FormData.fromMap({
+        'image': [
+          await MultipartFile.fromFile(
+            imagePath,
+            filename: imagePath.split('/').last,
+            contentType: MediaType('image', fileExtension),
+          )
+        ],
+      });
+
+      var response = await _dio.request(
+        '${ApiConstants.apiBaseUrl}${ApiConstants.uploadImage}',
+        options: Options(
+          method: 'POST',
+          headers: headers,
+        ),
+        data: data,
+      );
+
+      return response.data;
     } on DioException catch (e) {
       if (e.response!.statusCode == 401) {
         await refreshToken();

@@ -7,6 +7,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:tasky/Core/Helper/extensions.dart';
 import 'package:tasky/Core/Helper/spacing.dart';
+import 'package:tasky/Core/Networking/api_constants.dart';
 import 'package:tasky/Core/Router/routes.dart';
 import 'package:tasky/Core/Theme/style.dart';
 import 'package:tasky/Core/theme/colors.dart';
@@ -52,7 +53,13 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Image.asset('assets/image/task_img.png'),
+                          Center(
+                            child: Image.network(
+                                '${ApiConstants.apiBaseUrl}${ApiConstants.getImageUrl}${state.task.imageUrl}',
+                                height: 200.h,
+                                width: 200.w,
+                                fit: BoxFit.cover),
+                          ),
                           Text(state.task.title,
                               style: TextStyles.font18BlackBold),
                           verticalSpace(8),
@@ -275,6 +282,8 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
                       setState(() {
                         imagePath = pickedFile.path;
                       });
+                      BlocProvider.of<TaskCubit>(context).uploadImageCubit(
+                          imagePath: File(pickedFile.path), editOrAdd: 'edit');
                     }
                   },
                   icon: const Icon(Icons.image),
@@ -354,7 +363,8 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
                         title: titleController.text,
                         description: descController.text,
                         priority: selectedPriority,
-                        imageUrl: imagePath,
+                        imageUrl: BlocProvider.of<TaskCubit>(context)
+                            .editImageUploadedName!,
                         status: selectedStatus,
                         userId: task.userId));
                 dialogContext.pop();
@@ -382,7 +392,15 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
             BlocProvider.of<TaskCubit>(context)
                 .getOneTaskCubit(taskId: widget.task.id);
           } else if (state is EditTaskError) {
-            Text("EDIT ERROR _${state.errorMessage}");
+            Center(
+              child: Padding(
+                padding: EdgeInsets.only(top: 20.h),
+                child: Text(
+                  "Something went wrong.",
+                  style: TextStyles.font24BlackBold,
+                ),
+              ),
+            );
           }
         },
         child: const SizedBox.shrink());

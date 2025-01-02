@@ -68,6 +68,8 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                     context.read<TaskCubit>().imagePickedUrl =
                         File(picked!.path);
                   });
+                  BlocProvider.of<TaskCubit>(context).uploadImageCubit(
+                      imagePath: File(picked!.path), editOrAdd: 'add');
                 },
               ),
               TextButton.icon(
@@ -81,6 +83,8 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                     context.read<TaskCubit>().imagePickedUrl =
                         File(picked!.path);
                   });
+                  BlocProvider.of<TaskCubit>(context).uploadImageCubit(
+                      imagePath: File(picked!.path), editOrAdd: 'add');
                 },
               ),
             ],

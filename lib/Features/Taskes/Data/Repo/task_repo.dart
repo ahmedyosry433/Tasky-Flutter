@@ -32,8 +32,4 @@ class TaskRepo {
   Future uploadImageRepo({required String ImagePath}) {
     return _api_service.uploadImage(imagePath: ImagePath);
   }
-
-  Future refreshTokenRepo() {
-    return _api_service.refreshToken();
-  }
 }

@@ -8,6 +8,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:qr_code_dart_scan/qr_code_dart_scan.dart';
 import 'package:tasky/Core/Helper/extensions.dart';
 import 'package:tasky/Core/Helper/spacing.dart';
+import 'package:tasky/Core/Networking/api_constants.dart';
 import 'package:tasky/Core/Router/routes.dart';
 import 'package:tasky/Core/Theme/colors.dart';
 import 'package:tasky/Core/Theme/style.dart';
@@ -449,7 +450,11 @@ class _TaskListScreenState extends State<TaskListScreen> {
                 imagePath.isNotEmpty
                     ? Image.file(File(imagePath),
                         height: 50.h, width: 50.w, fit: BoxFit.cover)
-                    : const SizedBox(),
+                    : Image.network(
+                        "${ApiConstants.apiBaseUrl}${ApiConstants.getImageUrl}${task.imageUrl}",
+                        height: 50.h,
+                        width: 50.w,
+                        fit: BoxFit.cover),
                 TextButton.icon(
                   onPressed: () async {
                     final picker = ImagePicker();
@@ -460,6 +465,8 @@ class _TaskListScreenState extends State<TaskListScreen> {
                       setState(() {
                         imagePath = pickedFile.path;
                       });
+                      BlocProvider.of<TaskCubit>(context).uploadImageCubit(
+                          imagePath: File(pickedFile.path), editOrAdd: 'edit');
                     }
                   },
                   icon: const Icon(Icons.image),
@@ -539,12 +546,12 @@ class _TaskListScreenState extends State<TaskListScreen> {
                       title: titleController.text,
                       description: descController.text,
                       priority: selectedPriority,
-                      imageUrl: imagePath,
+                      imageUrl: BlocProvider.of<TaskCubit>(context)
+                          .editImageUploadedName!,
                       status: selectedStatus,
                       userId: task.userId),
                 );
-                BlocProvider.of<TaskCubit>(context)
-                    .uploadImageCubit(imagePickedUrl: imagePath);
+
                 dialogContext.pop();
               },
               child: Text(
