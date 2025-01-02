@@ -272,7 +272,11 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
                 imagePath.isNotEmpty
                     ? Image.file(File(imagePath),
                         height: 50.h, width: 50.w, fit: BoxFit.cover)
-                    : const SizedBox(),
+                    : Image.network(
+                        "${ApiConstants.apiBaseUrl}${ApiConstants.getImageUrl}${task.imageUrl}",
+                        height: 50.h,
+                        width: 50.w,
+                        fit: BoxFit.cover),
                 TextButton.icon(
                   onPressed: () async {
                     final picker = ImagePicker();
