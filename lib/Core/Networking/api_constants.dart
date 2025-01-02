@@ -8,4 +8,6 @@ class ApiConstants {
   static const String taskesrUrl = 'todos';
   static const String uploadImage = 'upload/image';
   static const String refreshToken = 'auth/refresh-token?token=';
+  static const String getImageUrl = 'images/';
+
 }

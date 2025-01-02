@@ -10,6 +10,7 @@ environment:
   sdk: ^3.5.3
 
 dependencies:
+  cached_network_image: ^3.4.1
   cupertino_icons: ^1.0.8
   dio: ^5.7.0
   dotted_border: ^2.1.0
@@ -23,9 +24,9 @@ dependencies:
   intl: ^0.20.1
   intl_phone_field: ^3.2.0
   pretty_dio_logger: ^1.4.0
+  qr_code_dart_scan: ^0.9.4
   qr_flutter: ^4.1.0
   shared_preferences: ^2.3.4
-  qr_code_dart_scan: ^0.9.4
 
 dev_dependencies:
   flutter_lints: ^4.0.0
