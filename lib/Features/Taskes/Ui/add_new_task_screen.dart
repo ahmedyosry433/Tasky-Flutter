@@ -119,14 +119,18 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
             AppTextFormField(
                 controller: bloc.titleController,
                 hintText: "Enter title here...",
-                validator: (valid) {},
+                validator: (valid) {
+                  return "Enter title here";
+                },
                 keyboardType: TextInputType.text),
             verticalSpace(20),
             AppTextFormField(
               controller: bloc.descController,
               maxLines: 5,
               hintText: "Enter description here...",
-              validator: (valid) {},
+              validator: (valid) {
+                return "Enter description here";
+              },
               keyboardType: TextInputType.text,
             ),
             verticalSpace(20),
@@ -274,7 +278,9 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
           context.pushNamed(Routes.taskesScreen);
         }
         if (state is AddTaskError) {
-          Text(state.errorMessage);
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text("Something went wrong. Makes sure your date"),
+          ));
         }
       },
       child: const SizedBox.shrink(),

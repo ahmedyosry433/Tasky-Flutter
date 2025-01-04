@@ -23,7 +23,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
+      body: SafeArea(
         child: SizedBox(
           height: MediaQuery.of(context).size.height,
           child: Stack(
@@ -35,7 +35,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               verticalSpace(14),
               Positioned(
-                bottom: 50.h,
+                bottom: 40.h,
                 left: 0,
                 right: 0,
                 child: Form(
@@ -120,7 +120,6 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ),
                               ],
                             ),
-                            verticalSpace(20),
                             _buildBlocLisenner(context),
                           ],
                         ),
@@ -148,12 +147,8 @@ class _LoginScreenState extends State<LoginScreen> {
             context.pushNamed(Routes.taskesScreen);
           } else if (state is LoginError) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  state.message,
-                  style: TextStyles.font14WhiteSemiBold,
-                ),
-                backgroundColor: Colors.red,
+              const SnackBar(
+                content: Text("Phone Number Or Password Invalid"),
               ),
             );
           }

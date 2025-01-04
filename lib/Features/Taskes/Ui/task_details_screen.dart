@@ -97,9 +97,18 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
                           ),
                         ],
                       );
-                    } else {
-                      return const SizedBox();
+                    } else if (state is OneTaskError) {
+                      return Center(
+                        child: Padding(
+                          padding: EdgeInsets.only(top: 20.h),
+                          child: Text(
+                            'Something went wrong.',
+                            style: TextStyles.font18BlackBold,
+                          ),
+                        ),
+                      );
                     }
+                    return const SizedBox();
                   },
                 ),
                 _buildDeleteBlocLisener(),
@@ -246,7 +255,11 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
         if (state is DeleteTaskLoading) {
         } else if (state is DeleteTaskSuccess) {
           context.pushReplacementNamed(Routes.taskesScreen);
-        } else if (state is DeleteTaskError) {}
+        } else if (state is DeleteTaskError) {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text("Something went wrong."),
+          ));
+        }
       },
       child: const SizedBox.shrink(),
     );
@@ -295,8 +308,6 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
                   icon: const Icon(Icons.image),
                   label: const Text("Select Image"),
                 ),
-
-                // Title Input
                 TextFormField(
                   controller: titleController,
                   decoration: const InputDecoration(
@@ -305,8 +316,6 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
                   ),
                 ),
                 const SizedBox(height: 16),
-
-                // Description Input
                 TextFormField(
                   controller: descController,
                   decoration: const InputDecoration(
@@ -316,8 +325,6 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
                   maxLines: 3,
                 ),
                 const SizedBox(height: 16),
-
-                // Priority Dropdown
                 DropdownButtonFormField<String>(
                   value: selectedPriority.toLowerCase(),
                   items: ['Low', 'Medium', 'High']
@@ -335,8 +342,6 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
                   ),
                 ),
                 const SizedBox(height: 16),
-
-                // Status Dropdown
                 DropdownButtonFormField<String>(
                   value: selectedStatus.toLowerCase(),
                   items: ['Waiting', 'Inprogress', 'Finished']
@@ -358,7 +363,7 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
           ),
           actions: [
             TextButton(
-              onPressed: () => Navigator.pop(dialogContext), // Close dialog
+              onPressed: () => Navigator.pop(dialogContext),
               child: const Text("Cancel"),
             ),
             TextButton(
@@ -398,15 +403,9 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
             BlocProvider.of<TaskCubit>(context)
                 .getOneTaskCubit(taskId: widget.task.id);
           } else if (state is EditTaskError) {
-            Center(
-              child: Padding(
-                padding: EdgeInsets.only(top: 20.h),
-                child: Text(
-                  "Something went wrong.",
-                  style: TextStyles.font24BlackBold,
-                ),
-              ),
-            );
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+              content: Text("Something went wrong."),
+            ));
           }
         },
         child: const SizedBox.shrink());

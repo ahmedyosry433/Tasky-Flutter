@@ -572,7 +572,9 @@ class _TaskListScreenState extends State<TaskListScreen> {
         } else if (state is DeleteTaskSuccess) {
           context.pushReplacementNamed(Routes.taskesScreen);
         } else if (state is DeleteTaskError) {
-          context.pushReplacementNamed(Routes.loginScreen);
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text("Something went wrong."),
+          ));
         }
       },
       child: const SizedBox.shrink(),
@@ -590,7 +592,9 @@ class _TaskListScreenState extends State<TaskListScreen> {
           } else if (state is EditTaskSuccess) {
             BlocProvider.of<TaskCubit>(context).tasksListCubit();
           } else if (state is EditTaskError) {
-            Text("EDIT ERROR _${state.errorMessage}");
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+              content: Text("Something went wrong."),
+            ));
           }
         },
         child: const SizedBox.shrink());
