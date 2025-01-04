@@ -156,10 +156,6 @@ class TaskCubit extends Cubit<TaskState> {
         editImageUploadedName = res['image'];
       }
 
-      print(
-          "____________________ IMAGE UPLOADED _______${addImageUploadedName}");
-      print(
-          "____________________ IMAGE UPLOADED _______${editImageUploadedName}");
     } catch (e) {
       throw Exception(e);
     }
@@ -184,7 +180,7 @@ class TaskCubit extends Cubit<TaskState> {
         return tempFile;
       }
     } catch (e) {
-      print("______________Error during image compression: $e");
+      throw Exception(e);
     }
     return null;
   }
