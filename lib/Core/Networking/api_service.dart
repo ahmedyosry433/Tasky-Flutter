@@ -113,24 +113,24 @@ class ApiService {
     }
   }
 
-  Future tasksList() async {
+  Future tasksList({required int pageNum}) async {
     try {
       var headers = {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ${await getToken()}',
       };
-      Response response =
-          await _dio.request(ApiConstants.apiBaseUrl + ApiConstants.taskesrUrl,
-              options: Options(
-                headers: headers,
-                method: 'GET',
-              ));
+      Response response = await _dio.request(
+          "${ApiConstants.apiBaseUrl}${ApiConstants.taskesPaginationUrl}$pageNum",
+          options: Options(
+            headers: headers,
+            method: 'GET',
+          ));
 
       return response;
     } on DioException catch (e) {
       if (e.response!.statusCode == 401) {
         await refreshToken();
-        return tasksList();
+        return tasksList(pageNum: pageNum);
       }
     }
   }

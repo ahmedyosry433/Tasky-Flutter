@@ -2,6 +2,7 @@
 
 import 'dart:io';
 
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -12,6 +13,7 @@ import 'package:tasky/Core/Helper/spacing.dart';
 import 'package:tasky/Core/Networking/api_constants.dart';
 import 'package:tasky/Core/Router/routes.dart';
 import 'package:tasky/Core/Theme/style.dart';
+import 'package:tasky/Core/Widgets/app_cached_network_image.dart';
 import 'package:tasky/Core/theme/colors.dart';
 import 'package:tasky/Features/Taskes/Data/Model/task_model.dart';
 import 'package:tasky/Features/Taskes/Logic/cubit/task_cubit.dart';
@@ -55,12 +57,16 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Center(
-                            child: Image.network(
-                                '${ApiConstants.apiBaseUrl}${ApiConstants.getImageUrl}${state.task.imageUrl}',
-                                height: 200.h,
-                                width: 200.w,
-                                fit: BoxFit.cover),
+                          SizedBox(
+                            width: 300.w,
+                            height: 200.h,
+                            child: AppCasedNetworkImage(
+                              imageUrl:
+                                  '${ApiConstants.apiBaseUrl}${ApiConstants.getImageUrl}${state.task.imageUrl}',
+                              fit: BoxFit.cover,
+                              width: 300.w,
+                              height: 200.h,
+                            ),
                           ),
                           Text(state.task.title,
                               style: TextStyles.font18BlackBold),

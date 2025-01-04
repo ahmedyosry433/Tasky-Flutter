@@ -9,8 +9,8 @@ class TaskRepo {
     return _api_service.logout();
   }
 
-  Future tasksListRepo() {
-    return _api_service.tasksList();
+  Future tasksListRepo({required int pageNum}) {
+    return _api_service.tasksList(pageNum: pageNum);
   }
 
   Future deleteTaskRepo({required String taskID}) {

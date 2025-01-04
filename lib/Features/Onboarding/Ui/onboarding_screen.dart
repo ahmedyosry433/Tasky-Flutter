@@ -46,7 +46,7 @@ class OnboardingScreen extends StatelessWidget {
                       buttonText: "Let's Start",
                       textStyle: TextStyles.font14WhiteSemiBold,
                       onPressed: () {
-                        context.pushNamed(Routes.registerScreen);
+                        context.pushNamed(Routes.loginScreen);
                       },
                     )
                   ],

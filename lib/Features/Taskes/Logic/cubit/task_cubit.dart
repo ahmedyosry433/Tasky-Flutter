@@ -23,7 +23,9 @@ class TaskCubit extends Cubit<TaskState> {
   DateTime? dueDate;
 
   List<TaskModel> tasksList = [];
+  List<TaskModel> newTasksList = [];
   List<TaskModel> allTasks = [];
+
   TaskModel? oneTask;
   String? addImageUploadedName;
   String? editImageUploadedName;
@@ -38,15 +40,27 @@ class TaskCubit extends Cubit<TaskState> {
     }
   }
 
-  void tasksListCubit() async {
+  void tasksListCubit({required int pageNum}) async {
     emit(TaskLoading());
     try {
-      var res = await _taskRepo.tasksListRepo();
-
+      newTasksList.clear();
+      var res = await _taskRepo.tasksListRepo(pageNum: pageNum);
       for (var task in res.data) {
-        allTasks.add(TaskModel.fromJson(task));
+        newTasksList.add(TaskModel.fromJson(task));
       }
-      tasksList = allTasks;
+
+      if (pageNum == 1) {
+        allTasks.clear();
+        for (var task in res.data) {
+          allTasks.add(TaskModel.fromJson(task));
+        }
+        tasksList = allTasks;
+      } else {
+        for (var task in res.data) {
+          allTasks.add(TaskModel.fromJson(task));
+        }
+        tasksList = allTasks;
+      }
 
       emit(TaskSuccess());
     } catch (e) {
@@ -155,7 +169,6 @@ class TaskCubit extends Cubit<TaskState> {
       } else if (editOrAdd == "edit") {
         editImageUploadedName = res['image'];
       }
-
     } catch (e) {
       throw Exception(e);
     }

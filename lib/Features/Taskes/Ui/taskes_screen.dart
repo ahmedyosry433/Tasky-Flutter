@@ -13,6 +13,7 @@ import 'package:tasky/Core/Networking/api_constants.dart';
 import 'package:tasky/Core/Router/routes.dart';
 import 'package:tasky/Core/Theme/colors.dart';
 import 'package:tasky/Core/Theme/style.dart';
+import 'package:tasky/Core/Widgets/app_cached_network_image.dart';
 import 'package:tasky/Features/Taskes/Data/Model/task_model.dart';
 import 'package:tasky/Features/Taskes/Logic/cubit/task_cubit.dart';
 
@@ -24,22 +25,54 @@ class TaskListScreen extends StatefulWidget {
 }
 
 class _TaskListScreenState extends State<TaskListScreen> {
-  @override
-  void initState() {
-    super.initState();
-    BlocProvider.of<TaskCubit>(context).tasksListCubit();
-  }
+  final ScrollController _scrollController = ScrollController();
+  int currentPage = 1;
 
   bool isScanning = false;
 
   int selectedFilter = 0;
   final List<String> filters = ['All', 'Inprogress', 'Waiting', 'Finished'];
+  @override
+  void initState() {
+    super.initState();
+    BlocProvider.of<TaskCubit>(context).tasksListCubit(pageNum: 1);
+
+    _setupScroll();
+  }
+
+  _setupScroll() {
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels ==
+          _scrollController.position.maxScrollExtent) {
+        if (BlocProvider.of<TaskCubit>(context).newTasksList.isNotEmpty) {
+          BlocProvider.of<TaskCubit>(context)
+              .tasksListCubit(pageNum: currentPage);
+          currentPage++;
+        } else {
+          return;
+        }
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return RefreshIndicator(
       onRefresh: () async {
-        BlocProvider.of<TaskCubit>(context).tasksListCubit();
+        BlocProvider.of<TaskCubit>(context).tasksListCubit(pageNum: 1);
+
+        _setupScroll();
+        setState(() {
+          currentPage = 1;
+          selectedFilter = 0;
+        });
       },
       child: Scaffold(
         backgroundColor: Colors.white,
@@ -117,10 +150,16 @@ class _TaskListScreenState extends State<TaskListScreen> {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Image.asset(
-                'assets/image/task_img.png',
+              SizedBox(
                 width: 50.w,
                 height: 50.h,
+                child: AppCasedNetworkImage(
+                  imageUrl:
+                      '${ApiConstants.apiBaseUrl}${ApiConstants.getImageUrl}${task.imageUrl}',
+                  fit: BoxFit.cover,
+                  width: 50.w,
+                  height: 50.h,
+                ),
               ),
               horizontalSpace(10),
               Expanded(
@@ -310,37 +349,35 @@ class _TaskListScreenState extends State<TaskListScreen> {
   Widget _buildCardBlocBuilder() {
     return BlocBuilder<TaskCubit, TaskState>(
       builder: (context, state) {
-        if (state is TaskLoading) {
+        if (state is TaskLoading && currentPage == 1) {
           return const Center(child: CircularProgressIndicator());
         }
-        if (state is TaskSuccess) {
-          return Expanded(
-            child: ListView.builder(
-              padding: EdgeInsets.symmetric(horizontal: 16.w),
-              itemCount: BlocProvider.of<TaskCubit>(context).tasksList.length,
-              itemBuilder: (context, index) {
-                return _buildTaskCard(
-                    BlocProvider.of<TaskCubit>(context).tasksList[index], () {
+
+        final tasks = BlocProvider.of<TaskCubit>(context).tasksList;
+        final newTasks = BlocProvider.of<TaskCubit>(context).newTasksList;
+
+        return Expanded(
+          child: ListView.builder(
+            controller: _scrollController,
+            padding: EdgeInsets.symmetric(horizontal: 16.w),
+            itemCount: tasks.length + 1,
+            itemBuilder: (context, index) {
+              if (index < tasks.length) {
+                return _buildTaskCard(tasks[index], () {
                   context.pushNamed(Routes.taskDetailsScreen,
-                      arguments:
-                          BlocProvider.of<TaskCubit>(context).tasksList[index]);
+                      arguments: tasks[index]);
                 });
-              },
-            ),
-          );
-        }
-        if (state is TaskError) {
-          return Center(
-            child: Padding(
-              padding: EdgeInsets.only(top: 20.h),
-              child: Text(
-                'Something went wrong.',
-                style: TextStyles.font18BlackBold,
-              ),
-            ),
-          );
-        }
-        return const SizedBox.shrink();
+              } else if (newTasks.isEmpty) {
+                return const SizedBox.shrink();
+              } else {
+                return Padding(
+                  padding: EdgeInsets.all(16.r),
+                  child: const Center(child: CircularProgressIndicator()),
+                );
+              }
+            },
+          ),
+        );
       },
     );
   }
@@ -581,7 +618,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
     );
   }
 
-  _buildEditBlocLisener() {
+  Widget _buildEditBlocLisener() {
     return BlocListener<TaskCubit, TaskState>(
         listenWhen: (previous, current) => previous != current,
         listener: (context, state) {
@@ -590,7 +627,8 @@ class _TaskListScreenState extends State<TaskListScreen> {
               child: CircularProgressIndicator(),
             );
           } else if (state is EditTaskSuccess) {
-            BlocProvider.of<TaskCubit>(context).tasksListCubit();
+            BlocProvider.of<TaskCubit>(context)
+                .tasksListCubit(pageNum: currentPage);
           } else if (state is EditTaskError) {
             ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
               content: Text("Something went wrong."),
@@ -671,7 +709,8 @@ class _TaskListScreenState extends State<TaskListScreen> {
               child: CircularProgressIndicator(),
             );
           } else if (state is AddTaskByQrCodeSuccess) {
-            BlocProvider.of<TaskCubit>(context).tasksListCubit();
+            BlocProvider.of<TaskCubit>(context)
+                .tasksListCubit(pageNum: currentPage);
             // context.pushNamed(Routes.taskesScreen);
           } else if (state is AddTaskByQrCodeError) {
             ScaffoldMessenger.of(context).showSnackBar(
