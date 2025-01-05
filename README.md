@@ -31,37 +31,43 @@ A Flutter-based task management application designed to streamline task organiza
 
 Below are screenshots showcasing the app's key features:
 
- ### Onboarding Screen**
+### Onboarding Screen\*\*
+
   <img src="screenshot/onboardingE.png" alt="Onboarding Screen" width="300"/>
-   
 
- ### Login
+### Login
+
   <img src="screenshot/loginE.png" alt="Login Screen" width="300"/>
- 
 
-### Register 
+### Register
+
  <img src="screenshot/signupE.png" alt="Register Screen" width="300"/>
   <img src="screenshot/signup2E.png" alt="Register Screen" width="300"/>
 
- ### Profile
- 
+### Profile
+
   <img src="screenshot/profileE.png" alt="Profile Screen" width="300"/>
 
- ### Home (Tasks & Filters)**  
+### Home (Tasks & Filters)\*\*
+
   <img src="screenshot/taskesE.png" alt="Home Screen" width="300"/>
 
- ### Add Task with QR Scanner**  
+### Add Task with QR Scanner\*\*
+
   <img src="screenshot/add_taskE.png" alt="Add Task Screen" width="300"/>
   <img src="screenshot/select_imageE.png" alt="Add Task 2 Screen" width="300"/>
-  
+  <img src="screenshot/qrE.png" alt="Add Task 2 Screen" width="300"/>
 
-### Task Details with QR Code**  
+### Task Details with QR Code\*\*
+
   <img src="screenshot/detailsE.png" alt="Task Details Screen" width="300"/>
 
- ### Edit Task**  
+### Edit Task\*\*
+
   <img src="screenshot/edit.png" alt="Edit Task Screen" width="300"/>
 
- ### Delete Task**  
+### Delete Task\*\*
+
   <img src="screenshot/delete.png" alt="Delete Task Screen" width="300"/>
 
 ---
