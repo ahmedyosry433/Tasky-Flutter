@@ -492,14 +492,16 @@ class _TaskListScreenState extends State<TaskListScreen> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                imagePath.isNotEmpty
-                    ? Image.file(File(imagePath),
-                        height: 50.h, width: 50.w, fit: BoxFit.cover)
-                    : Image.network(
-                        "${ApiConstants.apiBaseUrl}${ApiConstants.getImageUrl}${task.imageUrl}",
-                        height: 50.h,
-                        width: 50.w,
-                        fit: BoxFit.cover),
+                SizedBox(
+                  height: 150.h,
+                  width: 150.w,
+                  child: AppCasedNetworkImage(
+                      imageUrl:
+                          "${ApiConstants.apiBaseUrl}${ApiConstants.getImageUrl}$imagePath",
+                      height: 150.h,
+                      width: 150.w,
+                      fit: BoxFit.cover),
+                ),
                 TextButton.icon(
                   onPressed: () async {
                     final picker = ImagePicker();
@@ -508,7 +510,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
 
                     if (pickedFile != null) {
                       setState(() {
-                        imagePath = pickedFile.path;
+                        imagePath = File(pickedFile.path).path;
                       });
                       BlocProvider.of<TaskCubit>(context).uploadImageCubit(
                           imagePath: File(pickedFile.path), editOrAdd: 'edit');
@@ -517,8 +519,6 @@ class _TaskListScreenState extends State<TaskListScreen> {
                   icon: const Icon(Icons.image),
                   label: const Text("Select Image"),
                 ),
-
-                // Title Input
                 TextFormField(
                   controller: titleController,
                   decoration: const InputDecoration(
@@ -527,8 +527,6 @@ class _TaskListScreenState extends State<TaskListScreen> {
                   ),
                 ),
                 const SizedBox(height: 16),
-
-                // Description Input
                 TextFormField(
                   controller: descController,
                   decoration: const InputDecoration(
@@ -538,8 +536,6 @@ class _TaskListScreenState extends State<TaskListScreen> {
                   maxLines: 3,
                 ),
                 const SizedBox(height: 16),
-
-                // Priority Dropdown
                 DropdownButtonFormField<String>(
                   value: selectedPriority.toLowerCase(),
                   items: ['Low', 'Medium', 'High']
@@ -557,8 +553,6 @@ class _TaskListScreenState extends State<TaskListScreen> {
                   ),
                 ),
                 const SizedBox(height: 16),
-
-                // Status Dropdown
                 DropdownButtonFormField<String>(
                   value: selectedStatus.toLowerCase(),
                   items: ['Waiting', 'Inprogress', 'Finished']
@@ -580,7 +574,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
           ),
           actions: [
             TextButton(
-              onPressed: () => Navigator.pop(dialogContext), // Close dialog
+              onPressed: () => Navigator.pop(dialogContext),
               child: const Text("Cancel"),
             ),
             TextButton(

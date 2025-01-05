@@ -65,7 +65,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                       await _picker.pickImage(source: ImageSource.camera);
                   dialogContext.pop();
                   setState(() {
-                    context.read<TaskCubit>().imagePickedUrl =
+                    context.read<TaskCubit>().addImagePickedUrl =
                         File(picked!.path);
                   });
                   BlocProvider.of<TaskCubit>(context).uploadImageCubit(
@@ -80,7 +80,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                       await _picker.pickImage(source: ImageSource.gallery);
                   dialogContext.pop();
                   setState(() {
-                    context.read<TaskCubit>().imagePickedUrl =
+                    context.read<TaskCubit>().addImagePickedUrl =
                         File(picked!.path);
                   });
                   BlocProvider.of<TaskCubit>(context).uploadImageCubit(
@@ -175,25 +175,56 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
       onTap: () {
         _pickImage(context);
       },
-      child: DottedBorder(
-          color: ColorsManager.primryColor, // Border color
-          strokeWidth: 1, // Border width
-          dashPattern: const [6, 3], // Pattern: 6px dash, 3px gap
-          borderType: BorderType.RRect, // Rounded rectangle border
-          radius: Radius.circular(10.r), // Corner radius
-          child: Container(
-            height: 50.h,
-            alignment: Alignment.center,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.add_photo_alternate_outlined,
-                    size: 32.r, color: ColorsManager.primryColor),
-                const SizedBox(height: 8),
-                Text('Add Img', style: TextStyles.font16PrimaryBold),
-              ],
-            ),
-          )),
+      child: Column(
+        children: [
+          BlocBuilder<TaskCubit, TaskState>(
+            builder: (context, state) {
+              if (state is UplaodImageLoading) {
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
+              } else if (state is UplaodImageSuccess) {
+                return Padding(
+                  padding: EdgeInsets.only(bottom: 20.h),
+                  child:
+                      BlocProvider.of<TaskCubit>(context).addImagePickedUrl !=
+                              null
+                          ? Image.file(
+                              BlocProvider.of<TaskCubit>(context)
+                                  .addImagePickedUrl!,
+                              fit: BoxFit.cover,
+                              width: 100.w,
+                              height: 100.h,
+                            )
+                          : const SizedBox.shrink(),
+                );
+              } else if (state is UplaodImageError) {
+                return const Text("Something went wrong");
+              }
+              return const SizedBox.shrink();
+            },
+          ),
+          DottedBorder(
+              color: ColorsManager.primryColor,
+              strokeWidth: 1,
+              dashPattern: const [6, 3],
+              borderType: BorderType.RRect,
+              radius: Radius.circular(10.r),
+              child: Container(
+                height: 50.h,
+                alignment: Alignment.center,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.add_photo_alternate_outlined,
+                        size: 32.r, color: ColorsManager.primryColor),
+                    const SizedBox(height: 8),
+                    Text('Add Img', style: TextStyles.font16PrimaryBold),
+                  ],
+                ),
+              )),
+        ],
+      ),
     );
   }
 

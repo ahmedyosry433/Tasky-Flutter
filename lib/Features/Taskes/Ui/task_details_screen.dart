@@ -56,15 +56,17 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          SizedBox(
-                            width: 300.w,
-                            height: 200.h,
-                            child: AppCasedNetworkImage(
-                              imageUrl:
-                                  '${ApiConstants.apiBaseUrl}${ApiConstants.getImageUrl}${state.task.imageUrl}',
-                              fit: BoxFit.cover,
+                          Center(
+                            child: SizedBox(
                               width: 300.w,
                               height: 200.h,
+                              child: AppCasedNetworkImage(
+                                imageUrl:
+                                    '${ApiConstants.apiBaseUrl}${ApiConstants.getImageUrl}${state.task.imageUrl}',
+                                fit: BoxFit.cover,
+                                width: 300.w,
+                                height: 200.h,
+                              ),
                             ),
                           ),
                           Text(state.task.title,
@@ -289,14 +291,16 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                imagePath.isNotEmpty
-                    ? Image.file(File(imagePath),
-                        height: 50.h, width: 50.w, fit: BoxFit.cover)
-                    : Image.network(
-                        "${ApiConstants.apiBaseUrl}${ApiConstants.getImageUrl}${task.imageUrl}",
-                        height: 50.h,
-                        width: 50.w,
-                        fit: BoxFit.cover),
+                SizedBox(
+                  height: 150.h,
+                  width: 150.w,
+                  child: AppCasedNetworkImage(
+                      imageUrl:
+                          "${ApiConstants.apiBaseUrl}${ApiConstants.getImageUrl}$imagePath",
+                      height: 150.h,
+                      width: 150.w,
+                      fit: BoxFit.cover),
+                ),
                 TextButton.icon(
                   onPressed: () async {
                     final picker = ImagePicker();

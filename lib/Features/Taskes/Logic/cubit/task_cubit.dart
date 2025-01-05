@@ -20,6 +20,7 @@ class TaskCubit extends Cubit<TaskState> {
   TextEditingController descController = TextEditingController();
   String? selectedPriority = 'low';
   File? imagePickedUrl;
+  File? addImagePickedUrl;
   File? compressedImagePickedUrl;
   DateTime? dueDate;
 
@@ -163,6 +164,7 @@ class TaskCubit extends Cubit<TaskState> {
 
   void uploadImageCubit(
       {required File imagePath, required String editOrAdd}) async {
+    emit(UplaodImageLoading());
     try {
       File? compressedImage = await reduceImageQuality(imageFile: imagePath);
 
@@ -173,23 +175,20 @@ class TaskCubit extends Cubit<TaskState> {
       } else if (editOrAdd == "edit") {
         editImageUploadedName = res['image'];
       }
+      emit(UplaodImageSuccess());
     } catch (e) {
-      throw Exception(e);
+      emit(UplaodImageError(e.toString()));
     }
   }
 
   Future<File?> reduceImageQuality({required File imageFile}) async {
     try {
-      // Read the image file as bytes
       final bytes = await imageFile.readAsBytes();
       final decodedImage = img.decodeImage(bytes);
 
       if (decodedImage != null) {
-        // Compress the image with reduced quality
-        final compressedBytes =
-            img.encodeJpg(decodedImage, quality: 50); // Lower quality
+        final compressedBytes = img.encodeJpg(decodedImage, quality: 50);
 
-        // Save the compressed image to a temporary file
         final tempDir = Directory.systemTemp;
         final tempFile =
             File('${tempDir.path}/${imageFile.path.split('/').last}');
