@@ -54,9 +54,9 @@ Below are screenshots showcasing the app's key features:
 
 ### Add Task with QR Scanner\*\*
 
-  <img src="screenshot/add_taskE.png" alt="Add Task Screen" width="300"/>
-  <img src="screenshot/select_imageE.png" alt="Add Task 2 Screen" width="300"/>
-  <img src="screenshot/qrE.png" alt="Add Task 2 Screen" width="300"/>
+  <img src="screenshot/add_taskE.png" alt="Add Task Screen" width="300"/>    <img src="screenshot/select_imageE.png" alt="Add Task 2 Screen" width="300"/>    <img src="screenshot/qrE.png" alt="Add Task 2 Screen" width="300"/>
+
+  
 
 ### Task Details with QR Code\*\*
 
