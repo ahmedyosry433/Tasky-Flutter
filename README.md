@@ -36,33 +36,33 @@ Below are screenshots showcasing the app's key features:
    
 
  ### Login
-  <img src="screenshot/loginE" alt="Login Screen" width="300"/>
+  <img src="screenshot/loginE.png" alt="Login Screen" width="300"/>
  
 
 ### Register 
- <img src="screenshot/signupE" alt="Register Screen" width="300"/>
-  <img src="screenshot/signup2E" alt="Register Screen" width="300"/>
+ <img src="screenshot/signupE.png" alt="Register Screen" width="300"/>
+  <img src="screenshot/signup2E.png" alt="Register Screen" width="300"/>
 
  ### Profile
  
-  <img src="screenshot/profileE" alt="Profile Screen" width="300"/>
+  <img src="screenshot/profileE.png" alt="Profile Screen" width="300"/>
 
  ### Home (Tasks & Filters)**  
-  <img src="screenshot/taskesE" alt="Home Screen" width="300"/>
+  <img src="screenshot/taskesE.png" alt="Home Screen" width="300"/>
 
  ### Add Task with QR Scanner**  
-  <img src="screenshot/add_taskE" alt="Add Task Screen" width="300"/>
-  <img src="screenshot/select_imageE" alt="Add Task 2 Screen" width="300"/>
+  <img src="screenshot/add_taskE.png" alt="Add Task Screen" width="300"/>
+  <img src="screenshot/select_imageE.png" alt="Add Task 2 Screen" width="300"/>
   
 
 ### Task Details with QR Code**  
-  <img src="screenshot/detailsE" alt="Task Details Screen" width="300"/>
+  <img src="screenshot/detailsE.png" alt="Task Details Screen" width="300"/>
 
  ### Edit Task**  
-  <img src="screenshot/edit" alt="Edit Task Screen" width="300"/>
+  <img src="screenshot/edit.png" alt="Edit Task Screen" width="300"/>
 
  ### Delete Task**  
-  <img src="screenshot/delete" alt="Delete Task Screen" width="300"/>
+  <img src="screenshot/delete.png" alt="Delete Task Screen" width="300"/>
 
 ---
 
