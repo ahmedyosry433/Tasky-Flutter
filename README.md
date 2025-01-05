@@ -45,14 +45,14 @@ Below are screenshots showcasing the app's key features:
    ![Profile Screen](screenshot/profileE.png)
 
 5. **Home (Tasks & Filters)**  
-   ![Home Screen](screenshots/home.png)
+   ![Home Screen](screenshot/taskesE.png)
 
 6. **Add Task with QR Scanner**  
    ![Add Task Screen](screenshot/add_taskE.png)
    ![Select Image](screenshot/select_imageE.png)
 
 7. **Task Details with QR Code**  
-   ![Task Details Screen](screenshoot/detailsE.png)
+   ![Task Details Screen](screenshot/detailsE.png)
 
 8. **Edit Task**  
    ![Edit Task Screen](screenshot/edit.png)
