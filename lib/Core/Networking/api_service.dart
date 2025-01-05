@@ -9,7 +9,6 @@ import 'package:tasky/Features/Login/Data/Model/login_model.dart';
 import 'package:tasky/Features/Register/Data/Model/register_model.dart';
 import 'package:tasky/Features/Taskes/Data/Model/task_model.dart';
 import '../Helper/shared_preferences_helper.dart';
-import 'package:mime_type/mime_type.dart';
 import 'package:http/http.dart' as http;
 
 class ApiService {
