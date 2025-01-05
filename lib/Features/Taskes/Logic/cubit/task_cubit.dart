@@ -47,7 +47,9 @@ class TaskCubit extends Cubit<TaskState> {
       var res = await _taskRepo.tasksListRepo(pageNum: pageNum);
       for (var task in res.data) {
         newTasksList.add(TaskModel.fromJson(task));
+        allTasks.add(TaskModel.fromJson(task));
       }
+      tasksList = allTasks;
 
       if (pageNum == 1) {
         allTasks.clear();
