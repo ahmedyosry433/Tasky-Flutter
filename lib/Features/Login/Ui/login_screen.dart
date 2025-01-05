@@ -151,7 +151,6 @@ class _LoginScreenState extends State<LoginScreen> {
             );
           } else if (state is LoginSuccess) {
             Navigator.pop(context);
-            context.pushNamed(Routes.taskesScreen);
             context.pushReplacementNamed(Routes.taskesScreen);
           } else if (state is LoginError) {
             context.pop();
