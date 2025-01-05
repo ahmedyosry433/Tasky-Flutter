@@ -5,6 +5,7 @@ import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:meta/meta.dart';
+import 'package:tasky/Core/Helper/shared_preferences_helper.dart';
 import 'package:tasky/Features/Taskes/Data/Model/task_model.dart';
 import 'package:tasky/Features/Taskes/Data/Repo/task_repo.dart';
 import 'package:image/image.dart' as img;
@@ -34,6 +35,7 @@ class TaskCubit extends Cubit<TaskState> {
     emit(LogoutLoading());
     try {
       await _taskRepo.logoutRepo();
+      await SharedPreferencesHelper.removeAllKeys();
       emit(LogoutSuccess());
     } catch (e) {
       emit(LogoutError(e.toString()));

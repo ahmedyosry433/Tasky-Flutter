@@ -26,7 +26,8 @@ class TaskyApp extends StatelessWidget {
         builder: (context, widget) {
           return MediaQuery(
             ///Setting font does not change with system font size
-            data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+            data: MediaQuery.of(context)
+                .copyWith(textScaler: const TextScaler.linear(1.0)),
             child: widget!,
           );
         },

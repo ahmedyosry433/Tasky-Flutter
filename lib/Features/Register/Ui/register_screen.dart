@@ -213,19 +213,21 @@ Widget _buildBlocLisenner(BuildContext context) {
     },
     listener: (context, state) {
       if (state is RegisterLoading) {
-        const Center(
-          child: CircularProgressIndicator(),
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (context) {
+            return const Center(child: CircularProgressIndicator());
+          },
         );
       }
       if (state is RegisterSuccess) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("Register Success"),
-          ),
-        );
-        context.pushNamed(Routes.taskesScreen);
+        context.pop();
+
+        context.pushReplacementNamed(Routes.taskesScreen);
       }
       if (state is RegisterError) {
+        context.pop();
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text("Something went wrong, Make sure Your Data"),

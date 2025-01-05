@@ -297,7 +297,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
             children: [
               IconButton(
                   onPressed: () {
-                    context.pushNamed(Routes.profileScreen);
+                    context.pushReplacementNamed(Routes.profileScreen);
                   },
                   icon: Icon(
                     Icons.account_circle_outlined,
@@ -326,12 +326,20 @@ class _TaskListScreenState extends State<TaskListScreen> {
         },
         listener: (context, state) {
           if (state is LogoutLoading) {
-            const Center(child: CircularProgressIndicator());
+            showDialog(
+              context: context,
+              barrierDismissible: false,
+              builder: (context) {
+                return const Center(child: CircularProgressIndicator());
+              },
+            );
           }
           if (state is LogoutSuccess) {
+            context.pop();
             context.pushReplacementNamed(Routes.loginScreen);
           }
           if (state is LogoutError) {
+            context.pop();
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(
@@ -606,9 +614,18 @@ class _TaskListScreenState extends State<TaskListScreen> {
     return BlocListener<TaskCubit, TaskState>(
       listener: (context, state) {
         if (state is DeleteTaskLoading) {
+          showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (context) {
+              return const Center(child: CircularProgressIndicator());
+            },
+          );
         } else if (state is DeleteTaskSuccess) {
+          context.pop();
           context.pushReplacementNamed(Routes.taskesScreen);
         } else if (state is DeleteTaskError) {
+          context.pop();
           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
             content: Text("Something went wrong."),
           ));
@@ -623,13 +640,19 @@ class _TaskListScreenState extends State<TaskListScreen> {
         listenWhen: (previous, current) => previous != current,
         listener: (context, state) {
           if (state is EditTaskLoading) {
-            const Center(
-              child: CircularProgressIndicator(),
+            showDialog(
+              context: context,
+              barrierDismissible: false,
+              builder: (context) {
+                return const Center(child: CircularProgressIndicator());
+              },
             );
           } else if (state is EditTaskSuccess) {
+            context.pop();
             BlocProvider.of<TaskCubit>(context)
                 .tasksListCubit(pageNum: currentPage);
           } else if (state is EditTaskError) {
+            context.pop();
             ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
               content: Text("Something went wrong."),
             ));
@@ -705,13 +728,19 @@ class _TaskListScreenState extends State<TaskListScreen> {
         listenWhen: (previous, current) => previous != current,
         listener: (context, state) {
           if (state is AddTaskByQrCodeLoading) {
-            const Center(
-              child: CircularProgressIndicator(),
+            showDialog(
+              context: context,
+              barrierDismissible: false,
+              builder: (context) {
+                return const Center(child: CircularProgressIndicator());
+              },
             );
           } else if (state is AddTaskByQrCodeSuccess) {
+            context.pop();
             BlocProvider.of<TaskCubit>(context)
                 .tasksListCubit(pageNum: currentPage);
             // context.pushNamed(Routes.taskesScreen);
+            context.pop();
           } else if (state is AddTaskByQrCodeError) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text('Scanned: ${state.errorMessage}')),
