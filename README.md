@@ -41,8 +41,8 @@ Below are screenshots showcasing the app's key features:
 
 ### Register
 
- <img src="screenshot/signupE.png" alt="Register Screen" width="300"/>
-  <img src="screenshot/signup2E.png" alt="Register Screen" width="300"/>
+ <img src="screenshot/signupE.png" alt="Register Screen" width="300"/>    <img src="screenshot/signup2E.png" alt="Register Screen" width="300"/>
+  
 
 ### Profile
 
