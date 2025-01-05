@@ -31,35 +31,35 @@ A Flutter-based task management application designed to streamline task organiza
 
 Below are screenshots showcasing the app's key features:
 
- ###Onboarding Screen
+ ### Onboarding Screen
     <img src="screenshot/onboardingE.png" alt="Onboarding Screen" width="300"/>
    
 
- ###Login
+ ### Login
  
    ![Login Screen](screenshot/loginE.png)
 
-###Register 
+### Register 
    ![Register Screen](screenshot/signupE.png)
    ![Register Screen](screenshot/signup2E.png)
 
- ###Profile**  
+ ### Profile**  
    ![Profile Screen](screenshot/profileE.png)
 
- ###Home (Tasks & Filters)**  
+ ### Home (Tasks & Filters)**  
    ![Home Screen](screenshot/taskesE.png)
 
- ###Add Task with QR Scanner**  
+ ### Add Task with QR Scanner**  
    ![Add Task Screen](screenshot/add_taskE.png)
    ![Select Image](screenshot/select_imageE.png)
 
-###Task Details with QR Code**  
+### Task Details with QR Code**  
    ![Task Details Screen](screenshot/detailsE.png)
 
- ###Edit Task**  
+ ### Edit Task**  
    ![Edit Task Screen](screenshot/edit.png)
 
- ###Delete Task**  
+ ### Delete Task**  
    ![Delete Task Screen](screenshot/delete.png)
 
 ---
