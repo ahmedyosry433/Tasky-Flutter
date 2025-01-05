@@ -56,13 +56,6 @@ class _TaskListScreenState extends State<TaskListScreen> {
   }
 
   @override
-  void dispose() {
-    _scrollController.dispose();
-
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return RefreshIndicator(
       onRefresh: () async {
@@ -297,7 +290,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
             children: [
               IconButton(
                   onPressed: () {
-                    context.pushReplacementNamed(Routes.profileScreen);
+                    context.pushNamed(Routes.profileScreen);
                   },
                   icon: Icon(
                     Icons.account_circle_outlined,
@@ -742,5 +735,12 @@ class _TaskListScreenState extends State<TaskListScreen> {
           }
         },
         child: const SizedBox.shrink());
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+
+    super.dispose();
   }
 }
