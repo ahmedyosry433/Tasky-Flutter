@@ -106,14 +106,4 @@ Below are screenshots showcasing the app's key features:
 - **Infinite Scrolling**: Fetches and loads tasks as you scroll, ensuring optimal performance.
 - **QR Code Functionality**: Seamlessly scan and generate QR codes for task management.
 
----
 
-## Contributing 🤝
-
-Contributions are welcome! Please submit a pull request or open an issue for suggestions or bug reports.
-
----
-
-## License 📄
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
