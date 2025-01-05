@@ -1,16 +1,109 @@
-# tasky
+# Tasky App 📋
 
-A new Flutter project.
+A Flutter-based task management application designed to streamline task organization with advanced features like QR scanning, infinite scrolling, and image optimization.
 
-## Getting Started
+## Features 🚀
 
-This project is a starting point for a Flutter application.
+### 🌟 Key Features
 
-A few resources to get you started if this is your first Flutter project:
+- **Onboarding Screen**: Welcome users with a smooth onboarding experience.
+- **Authentication**:
+  - **Login**: Secure login system for existing users.
+  - **Register**: Easy-to-use registration system for new users.
+- **Profile Management**: View and update your personal details.
+- **Task Management**:
+  - **Home Screen**:
+    - View all tasks.
+    - Apply filters to sort tasks.
+    - Infinite scrolling for seamless navigation.
+  - **Add Tasks**:
+    - Use a **QR scanner** to add tasks quickly.
+    - Enter task details manually.
+    - Upload task images with optimized, low-quality compression for faster uploads.
+  - **Task Details**:
+    - View detailed information about a task.
+    - Generate a **QR code** for the task.
+  - **Edit and Delete Tasks**:
+    - Modify existing tasks easily.
+    - Delete tasks you no longer need.
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+### 📸 Screenshots
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Below are screenshots showcasing the app's key features:
+
+1. **Onboarding Screen**  
+   ![Onboarding Screen](screenshot/onboardingE.png)
+
+2. **Login**  
+   ![Login Screen](screenshot/loginE.png)
+
+3. **Register**  
+   ![Register Screen](screenshot/signupE.png)
+   ![Register Screen](screenshot/signup2E.png)
+
+4. **Profile**  
+   ![Profile Screen](screenshot/profileE.png)
+
+5. **Home (Tasks & Filters)**  
+   ![Home Screen](screenshots/home.png)
+
+6. **Add Task with QR Scanner**  
+   ![Add Task Screen](screenshot/add_taskE.png)
+   ![Select Image](screenshot/select_imageE.png)
+
+7. **Task Details with QR Code**  
+   ![Task Details Screen](screenshoot/detailsE.png)
+
+8. **Edit Task**  
+   ![Edit Task Screen](screenshot/edit.png)
+
+9. **Delete Task**  
+   ![Delete Task Screen](screenshot/delete.png)
+
+---
+
+## Installation & Setup 🛠️
+
+1. **Clone the repository**:
+
+   ```bash
+   git clone https://github.com/ahmedyosry433/Tasky-Flutter.git
+   cd Tasky-Flutter
+   ```
+
+2. **Install dependencies**:
+
+   ```bash
+   flutter pub get
+   ```
+
+3. **Run the app**:
+
+   ```bash
+   flutter run
+   ```
+
+4. **Build APK** (Optional):
+   ```bash
+   flutter build apk --release
+   ```
+
+---
+
+## Technical Highlights ✨
+
+- **Low-Quality Image Generation**: Automatically compresses uploaded images for faster server communication.
+- **Infinite Scrolling**: Fetches and loads tasks as you scroll, ensuring optimal performance.
+- **QR Code Functionality**: Seamlessly scan and generate QR codes for task management.
+
+---
+
+## Contributing 🤝
+
+Contributions are welcome! Please submit a pull request or open an issue for suggestions or bug reports.
+
+---
+
+## License 📄
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

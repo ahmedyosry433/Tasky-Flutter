@@ -95,17 +95,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
               _buildInfoCard(
                 label: 'PHONE',
                 value: BlocProvider.of<ProfileCubit>(context).phone ?? '',
-                icon: IconButton(
+                icon: Tooltip(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(5.r),
+                    color: ColorsManager.primryColor,
+                    border: Border.all(color: Colors.black),
+                  ),
+                  message: 'Phone number copied!',
+                  child: IconButton(
                     onPressed: () {
                       Clipboard.setData(ClipboardData(
                           text: BlocProvider.of<ProfileCubit>(context).phone!));
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Text copied to clipboard!'),
-                        ),
-                      );
                     },
-                    icon: Image.asset('assets/image/copy.png', width: 25.w)),
+                    icon: Image.asset('assets/image/copy.png', width: 25.w),
+                  ),
+                ),
               ),
               verticalSpace(16),
               _buildInfoCard(
