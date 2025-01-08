@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:tasky/Core/Router/app_router.dart';
 import 'package:tasky/Core/Router/routes.dart';
+import 'package:tasky/main.dart';
 
 class TaskyApp extends StatelessWidget {
   final AppRouter appRouter;
@@ -21,7 +22,7 @@ class TaskyApp extends StatelessWidget {
           useMaterial3: true,
         ),
         debugShowCheckedModeBanner: false,
-        initialRoute: Routes.onboardingScreen,
+        initialRoute:isLogedInUser?Routes.taskesScreen: Routes.onboardingScreen,
         onGenerateRoute: appRouter.onGenerateRoute,
         builder: (context, widget) {
           return MediaQuery(
