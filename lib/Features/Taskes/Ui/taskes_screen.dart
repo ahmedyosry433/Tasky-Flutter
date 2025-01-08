@@ -42,14 +42,15 @@ class _TaskListScreenState extends State<TaskListScreen> {
 
   _setupScroll() {
     _scrollController.addListener(() {
-      if (_scrollController.position.pixels ==
-          _scrollController.position.maxScrollExtent) {
-        if (BlocProvider.of<TaskCubit>(context).newTasksList.isNotEmpty) {
-          BlocProvider.of<TaskCubit>(context)
-              .tasksListCubit(pageNum: currentPage);
-          currentPage++;
-        } else {
-          return;
+      if (_scrollController.position.atEdge) {
+        if (_scrollController.position.pixels != 0) {
+          if (BlocProvider.of<TaskCubit>(context).newTasksList.isNotEmpty) {
+            BlocProvider.of<TaskCubit>(context)
+                .tasksListCubit(pageNum: currentPage);
+            currentPage++;
+          } else {
+            return;
+          }
         }
       }
     });
@@ -356,12 +357,16 @@ class _TaskListScreenState extends State<TaskListScreen> {
 
         final tasks = BlocProvider.of<TaskCubit>(context).tasksList;
         final newTasks = BlocProvider.of<TaskCubit>(context).newTasksList;
-
+        final screenHeight = MediaQuery.of(context).size.height;
+        const taskItemHeight =
+            100.0;
+        final totalTasksHeight = tasks.length * taskItemHeight;
+        
         return Expanded(
           child: ListView.builder(
             controller: _scrollController,
             padding: EdgeInsets.symmetric(horizontal: 16.w),
-            itemCount: tasks.length + 1,
+            itemCount: tasks.length + (totalTasksHeight < screenHeight ? 0 : 1),
             itemBuilder: (context, index) {
               if (index < tasks.length) {
                 return _buildTaskCard(tasks[index], () {
