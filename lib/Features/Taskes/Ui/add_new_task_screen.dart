@@ -14,6 +14,7 @@ import 'package:tasky/Core/Router/routes.dart';
 import 'package:tasky/Core/Theme/style.dart';
 import 'package:tasky/Core/Widgets/app_text_button.dart';
 import 'package:tasky/Core/Widgets/app_text_form_field.dart';
+import 'package:tasky/Core/Widgets/app_text_form_field_with_hint.dart';
 import 'package:tasky/Core/theme/colors.dart';
 import 'package:tasky/Features/Taskes/Data/Model/task_model.dart';
 import 'package:tasky/Features/Taskes/Logic/cubit/task_cubit.dart';
@@ -116,31 +117,33 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
           children: [
             _buildImagePicker(),
             verticalSpace(20),
-            AppTextFormField(
-                controller: bloc.titleController,
-                hintText: "Enter title here...",
-                validator: (valid) {
-                  return "Enter title here";
-                },
-                keyboardType: TextInputType.text),
+            AppTextFormFieldWithTopHint(
+              topHintText: "Task title",
+              appTextFormField: AppTextFormField(
+                  controller: bloc.titleController,
+                  hintText: "Enter title here...",
+                  validator: (valid) {},
+                  keyboardType: TextInputType.text),
+            ),
             verticalSpace(20),
-            AppTextFormField(
-              controller: bloc.descController,
-              maxLines: 5,
-              hintText: "Enter description here...",
-              validator: (valid) {
-                return "Enter description here";
-              },
-              keyboardType: TextInputType.text,
+            AppTextFormFieldWithTopHint(
+              topHintText: "Task Description",
+              appTextFormField: AppTextFormField(
+                controller: bloc.descController,
+                maxLines: 5,
+                hintText: "Enter description here...",
+                validator: (valid) {},
+                keyboardType: TextInputType.text,
+              ),
             ),
             verticalSpace(20),
             _buildPrioritySelectorDropdown(),
             verticalSpace(20),
-            _buildDueDateField(),
+            _buildDueDateFieldWithHint(hintText: "Due date"),
             verticalSpace(40),
             AppTextButton(
                 buttonText: "Add Task",
-                textStyle: TextStyles.font14WhiteSemiBold,
+                textStyle: TextStyles.font19WhiteBold,
                 onPressed: () {
                   BlocProvider.of<TaskCubit>(context).addTaskCubit();
                 }),
@@ -163,7 +166,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
             },
             icon: Image.asset('assets/image/arrow_to_left.png'),
           ),
-          Text('Add New Task', style: TextStyles.font18BlackBold),
+          Text('Add New Task', style: TextStyles.font16BlackBold),
         ],
       ),
       leadingWidth: 200.w,
@@ -228,74 +231,92 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
     );
   }
 
-  Widget _buildDueDateField() {
-    return AppTextFormField(
-      hintText: "choose due date...",
-      validator: (value) {
-        if (value == null || value.isEmpty) {
-          return 'Please select a date';
-        }
-        return null;
-      },
-      keyboardType: TextInputType.datetime,
-      suffixIcon: IconButton(
-        icon: Icon(
-          Icons.calendar_month_outlined,
-          size: 24.r,
-          color: ColorsManager.primryColor,
+  Widget _buildDueDateFieldWithHint({required String hintText}) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(hintText, style: TextStyles.font12GrayRegular),
+        verticalSpace(10),
+        AppTextFormField(
+          hintText: "choose due date...",
+          validator: (value) {
+            if (value == null || value.isEmpty) {
+              return 'Please select a date';
+            }
+            return null;
+          },
+          keyboardType: TextInputType.datetime,
+          suffixIcon: IconButton(
+            icon: Icon(
+              Icons.calendar_month_outlined,
+              size: 24.r,
+              color: ColorsManager.primryColor,
+            ),
+            onPressed: () => _pickDate(context),
+          ),
+          readOnly: true,
+          controller: TextEditingController(
+              text: BlocProvider.of<TaskCubit>(context).dueDate == null
+                  ? ''
+                  : DateFormat('yyyy - M - d')
+                      .format(BlocProvider.of<TaskCubit>(context).dueDate!)
+                      .toString()),
         ),
-        onPressed: () => _pickDate(context),
-      ),
-      readOnly: true,
-      controller: TextEditingController(
-          text: BlocProvider.of<TaskCubit>(context).dueDate == null
-              ? ''
-              : DateFormat('yyyy - M - d')
-                  .format(BlocProvider.of<TaskCubit>(context).dueDate!)
-                  .toString()),
+      ],
     );
   }
 
   Widget _buildPrioritySelectorDropdown() {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
-      decoration: BoxDecoration(
-        color: ColorsManager.lightPrimryColor,
-        borderRadius: BorderRadius.circular(8.r),
-      ),
-      child: DropdownButtonHideUnderline(
-        child: DropdownButton<String>(
-          value: BlocProvider.of<TaskCubit>(context).selectedPriority,
-          isExpanded: true,
-          icon: Image.asset(
-            'assets/image/arrow_down.png',
-            width: 24.w,
-          ),
-          items: ['low', 'medium', 'high'].map((priority) {
-            return DropdownMenuItem<String>(
-              value: priority,
-              child: Row(
-                children: [
-                  Icon(Icons.flag_outlined,
-                      size: 20.r, color: ColorsManager.primryColor),
-                  horizontalSpace(8),
-                  Text(
-                    priority,
-                    style: TextStyles.font14PrimarySemiBold,
-                  ),
-                ],
-              ),
-            );
-          }).toList(),
-          onChanged: (newValue) {
-            if (newValue != null) {
-              setState(() {
-                BlocProvider.of<TaskCubit>(context).selectedPriority = newValue;
-              });
-            }
-          },
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          "Priority",
+          style: TextStyles.font12GrayRegular,
         ),
-      ),
+        verticalSpace(10),
+        Container(
+          padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+          decoration: BoxDecoration(
+            color: ColorsManager.lightPrimryColor,
+            borderRadius: BorderRadius.circular(8.r),
+          ),
+          child: DropdownButtonHideUnderline(
+            child: DropdownButton<String>(
+              value: BlocProvider.of<TaskCubit>(context).selectedPriority,
+              isExpanded: true,
+              icon: Image.asset(
+                'assets/image/arrow_down.png',
+                width: 24.w,
+              ),
+              items: ['low', 'medium', 'high'].map((priority) {
+                return DropdownMenuItem<String>(
+                  value: priority,
+                  child: Row(
+                    children: [
+                      Icon(Icons.flag_outlined,
+                          size: 20.r, color: ColorsManager.primryColor),
+                      horizontalSpace(8),
+                      Text(
+                        "$priority Priority",
+                        style: TextStyles.font16PrimaryBold,
+                      ),
+                    ],
+                  ),
+                );
+              }).toList(),
+              onChanged: (newValue) {
+                if (newValue != null) {
+                  setState(() {
+                    BlocProvider.of<TaskCubit>(context).selectedPriority =
+                        newValue;
+                  });
+                }
+              },
+            ),
+          ),
+        ),
+      ],
     );
   }
 
