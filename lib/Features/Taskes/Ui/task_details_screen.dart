@@ -70,7 +70,7 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
                             ),
                           ),
                           Text(state.task.title,
-                              style: TextStyles.font18BlackBold),
+                              style: TextStyles.font24BlackBold),
                           verticalSpace(8),
                           Text(state.task.description,
                               style: TextStyles.font14GrayRegular),
@@ -78,8 +78,7 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
                           _buildInfoCard(
                             label: 'End Date',
                             value: '30 June, 2022',
-                            icon: const Icon(Icons.calendar_today,
-                                color: ColorsManager.primryColor),
+                            icon: Image.asset('assets/image/calendar.png'),
                           ),
                           verticalSpace(10),
                           _buildDropdownShapCard(
@@ -136,6 +135,9 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
         Padding(
           padding: EdgeInsets.only(right: 10.w),
           child: PopupMenuButton(
+            offset: const Offset(80, 10),
+            shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(15.0))),
             position: PopupMenuPosition.under,
             color: Colors.white,
             child: Icon(
@@ -178,14 +180,15 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
                 );
               }
             },
-            itemBuilder: (context) => [
-              const PopupMenuItem(
+            itemBuilder: (context) => <PopupMenuEntry<String>>[
+              const PopupMenuItem<String>(
                 value: 'edit',
                 child: Text('Edit'),
               ),
-              const PopupMenuItem(
+              const PopupMenuDivider(),
+              const PopupMenuItem<String>(
                 value: 'delete',
-                child: Text('Delete', style: TextStyle(color: Colors.red)),
+                child: Text('Delete', style: TextStyle(color: Colors.orange)),
               ),
             ],
           ),
@@ -199,7 +202,7 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
             },
             icon: Image.asset('assets/image/arrow_to_left.png'),
           ),
-          Text('Task Details', style: TextStyles.font18BlackBold),
+          Text('Task Details', style: TextStyles.font16BlackBold),
         ],
       ),
       leadingWidth: 200.w,
@@ -214,16 +217,28 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
         color: ColorsManager.primryColor.withOpacity(0.1),
         borderRadius: BorderRadius.circular(12.r),
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          label == 'End Date'
+              ? Text(
+                  "End Date",
+                  style: TextStyles.font14GrayRegular,
+                  textAlign: TextAlign.start,
+                )
+              : const SizedBox.shrink(),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(value, style: const TextStyle(fontWeight: FontWeight.bold)),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(value, style: TextStyles.font16BlackRegular),
+                ],
+              ),
+              if (icon != null) icon,
             ],
           ),
-          if (icon != null) icon,
         ],
       ),
     );
@@ -245,8 +260,7 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(value,
-                    style: const TextStyle(fontWeight: FontWeight.bold)),
+                Text(value, style: TextStyles.font16PrimaryBold),
               ],
             ),
           ),
