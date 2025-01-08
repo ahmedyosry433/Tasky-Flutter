@@ -12,6 +12,7 @@ import 'package:tasky/Core/Helper/spacing.dart';
 import 'package:tasky/Core/Networking/api_constants.dart';
 import 'package:tasky/Core/Router/routes.dart';
 import 'package:tasky/Core/Theme/colors.dart';
+import 'package:tasky/Core/Theme/font_weight_helper.dart';
 import 'package:tasky/Core/Theme/style.dart';
 import 'package:tasky/Core/Widgets/app_cached_network_image.dart';
 import 'package:tasky/Features/Taskes/Data/Model/task_model.dart';
@@ -81,7 +82,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
                     padding: EdgeInsets.symmetric(horizontal: 16.w),
                     child: Text(
                       'My Tasks',
-                      style: TextStyles.font17GrayBold,
+                      style: TextStyles.font16GrayBold,
                     ),
                   ),
                   _buildFilter(),
@@ -165,7 +166,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
                       children: [
                         Expanded(
                           child: Text(task.title,
-                              style: TextStyles.font14BlackBold),
+                              style: TextStyles.font16BlackBold),
                         ),
                         Container(
                           padding: EdgeInsets.symmetric(
@@ -178,7 +179,10 @@ class _TaskListScreenState extends State<TaskListScreen> {
                           ),
                           child: Text(
                             task.status,
-                            style: TextStyle(color: statusColor),
+                            style: TextStyle(
+                                fontSize: 12.sp,
+                                fontWeight: FontWeightHelper.regular,
+                                color: statusColor),
                           ),
                         ),
                         horizontalSpace(2),
@@ -358,10 +362,9 @@ class _TaskListScreenState extends State<TaskListScreen> {
         final tasks = BlocProvider.of<TaskCubit>(context).tasksList;
         final newTasks = BlocProvider.of<TaskCubit>(context).newTasksList;
         final screenHeight = MediaQuery.of(context).size.height;
-        const taskItemHeight =
-            100.0;
+        const taskItemHeight = 100.0;
         final totalTasksHeight = tasks.length * taskItemHeight;
-        
+
         return Expanded(
           child: ListView.builder(
             controller: _scrollController,
@@ -432,7 +435,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 16.w),
       child: SizedBox(
-        height: 37.h,
+        height: 40.h,
         child: ListView.builder(
             scrollDirection: Axis.horizontal,
             shrinkWrap: true,
@@ -458,12 +461,9 @@ class _TaskListScreenState extends State<TaskListScreen> {
                   ),
                   child: Text(
                     filters[index],
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: selectedFilter == index
-                          ? ColorsManager.whiteColor
-                          : ColorsManager.grayColor,
-                    ),
+                    style: selectedFilter == index
+                        ? TextStyles.font16WhiteBold
+                        : TextStyles.font16GrayRegular,
                   ),
                 ),
               );
