@@ -71,15 +71,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               controller: BlocProvider.of<LoginCubit>(context)
                                   .passwordController,
                               hintText: "Password",
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Please enter a password';
-                                }
-                                if (value.length < 6) {
-                                  return 'Password must be at least 6 characters';
-                                }
-                                return null;
-                              },
+                              validator: (value) {},
                               keyboardType: TextInputType.visiblePassword,
                               isObscureText: _isPasswordVisible,
                               suffixIcon: IconButton(
