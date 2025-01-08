@@ -117,8 +117,8 @@ class TaskCubit extends Cubit<TaskState> {
   void editTaskCubit({required TaskModel task}) async {
     emit(EditTaskLoading());
     try {
-      await _taskRepo.editTaskRepo(task: task);
-      emit(EditTaskSuccess());
+     var res= await _taskRepo.editTaskRepo(task: task);
+      emit(EditTaskSuccess(TaskModel.fromJson(res.data)));
     } catch (e) {
       emit(EditTaskError(e.toString()));
     }
@@ -127,7 +127,7 @@ class TaskCubit extends Cubit<TaskState> {
   void addTaskCubit() async {
     emit(AddTaskLoading());
     try {
-      await _taskRepo.addTaskRepo(
+      var res = await _taskRepo.addTaskRepo(
         task: AddTaskModel(
             image: addImageUploadedName!,
             title: titleController.text,
@@ -136,7 +136,7 @@ class TaskCubit extends Cubit<TaskState> {
             dueDate: DateFormat('yyyy - M - d').format(dueDate!).toString()),
       );
 
-      emit(AddTaskSuccess());
+      emit(AddTaskSuccess(TaskModel.fromJson(res.data)));
     } catch (e) {
       emit(AddTaskError(e.toString()));
     }
@@ -156,7 +156,7 @@ class TaskCubit extends Cubit<TaskState> {
           priority: res.priority,
         ),
       );
-      emit(AddTaskByQrCodeSuccess());
+      emit(AddTaskByQrCodeSuccess(res));
     } catch (e) {
       emit(AddTaskByQrCodeError(e.toString()));
     }

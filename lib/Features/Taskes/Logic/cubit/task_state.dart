@@ -50,7 +50,10 @@ final class DeleteTaskError extends TaskState {
 
 final class EditTaskLoading extends TaskState {}
 
-final class EditTaskSuccess extends TaskState {}
+final class EditTaskSuccess extends TaskState {
+  final TaskModel task;
+  EditTaskSuccess(this.task);
+}
 
 final class EditTaskError extends TaskState {
   final String errorMessage;
@@ -60,7 +63,10 @@ final class EditTaskError extends TaskState {
 
 final class AddTaskLoading extends TaskState {}
 
-final class AddTaskSuccess extends TaskState {}
+final class AddTaskSuccess extends TaskState {
+  final TaskModel task;
+  AddTaskSuccess(this.task);
+}
 
 final class AddTaskError extends TaskState {
   final String errorMessage;
@@ -70,7 +76,10 @@ final class AddTaskError extends TaskState {
 
 final class AddTaskByQrCodeLoading extends TaskState {}
 
-final class AddTaskByQrCodeSuccess extends TaskState {}
+final class AddTaskByQrCodeSuccess extends TaskState {
+  final TaskModel task;
+  AddTaskByQrCodeSuccess(this.task);
+}
 
 final class AddTaskByQrCodeError extends TaskState {
   final String errorMessage;

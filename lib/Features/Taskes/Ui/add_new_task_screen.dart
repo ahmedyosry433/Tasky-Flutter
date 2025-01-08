@@ -331,7 +331,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
         if (state is AddTaskLoading) {
           const Center(child: CircularProgressIndicator());
         } else if (state is AddTaskSuccess) {
-          context.pushNamed(Routes.taskesScreen);
+          context.pushNamed(Routes.taskDetailsScreen,arguments:state.task );
         }
         if (state is AddTaskError) {
           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(

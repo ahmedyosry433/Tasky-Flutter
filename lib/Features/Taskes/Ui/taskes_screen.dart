@@ -187,6 +187,10 @@ class _TaskListScreenState extends State<TaskListScreen> {
                         ),
                         horizontalSpace(2),
                         PopupMenuButton(
+                          offset: const Offset(0, 10),
+                          shape: const RoundedRectangleBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(15.0))),
                           position: PopupMenuPosition.under,
                           color: Colors.white,
                           child: Icon(
@@ -231,11 +235,12 @@ class _TaskListScreenState extends State<TaskListScreen> {
                               );
                             }
                           },
-                          itemBuilder: (context) => [
+                          itemBuilder: (context) => <PopupMenuEntry<String>>[
                             const PopupMenuItem(
                               value: 'edit',
                               child: Text('Edit'),
                             ),
+                            const PopupMenuDivider(),
                             const PopupMenuItem(
                               value: 'delete',
                               child: Text('Delete',
@@ -584,7 +589,8 @@ class _TaskListScreenState extends State<TaskListScreen> {
                       description: descController.text,
                       priority: selectedPriority,
                       imageUrl: BlocProvider.of<TaskCubit>(context)
-                          .editImageUploadedName!,
+                              .editImageUploadedName ??
+                          task.imageUrl,
                       status: selectedStatus,
                       userId: task.userId),
                 );
@@ -641,8 +647,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
             );
           } else if (state is EditTaskSuccess) {
             context.pop();
-            BlocProvider.of<TaskCubit>(context)
-                .tasksListCubit(pageNum: currentPage);
+            context.pushNamed(Routes.taskDetailsScreen, arguments: state.task);
           } else if (state is EditTaskError) {
             context.pop();
             ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
@@ -729,10 +734,8 @@ class _TaskListScreenState extends State<TaskListScreen> {
             );
           } else if (state is AddTaskByQrCodeSuccess) {
             context.pop();
-            BlocProvider.of<TaskCubit>(context)
-                .tasksListCubit(pageNum: currentPage);
-            // context.pushNamed(Routes.taskesScreen);
-            context.pop();
+
+            context.pushNamed(Routes.taskDetailsScreen, arguments: state.task);
           } else if (state is AddTaskByQrCodeError) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text('Scanned: ${state.errorMessage}')),

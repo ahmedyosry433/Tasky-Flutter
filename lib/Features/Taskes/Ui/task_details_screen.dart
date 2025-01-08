@@ -188,7 +188,7 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
               const PopupMenuDivider(),
               const PopupMenuItem<String>(
                 value: 'delete',
-                child: Text('Delete', style: TextStyle(color: Colors.orange)),
+                child: Text('Delete', style: TextStyle(color: Colors.red)),
               ),
             ],
           ),
@@ -402,7 +402,8 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
                         description: descController.text,
                         priority: selectedPriority,
                         imageUrl: BlocProvider.of<TaskCubit>(context)
-                            .editImageUploadedName!,
+                                .editImageUploadedName ??
+                            task.imageUrl,
                         status: selectedStatus,
                         userId: task.userId));
                 dialogContext.pop();
