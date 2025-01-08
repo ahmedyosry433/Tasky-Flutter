@@ -99,9 +99,19 @@ class TextStyles {
     fontSize: 14.sp,
     fontWeight: FontWeightHelper.regular,
   );
+  static TextStyle font12GrayMedium = TextStyle(
+    color: ColorsManager.grayColor,
+    fontSize: 12.sp,
+    fontWeight: FontWeightHelper.medium,
+  );
   static TextStyle font17GrayBold = TextStyle(
     color: ColorsManager.grayColor,
     fontSize: 17.sp,
+    fontWeight: FontWeightHelper.bold,
+  );
+  static TextStyle font18GrayBold = TextStyle(
+    color: ColorsManager.grayColor,
+    fontSize: 18.sp,
     fontWeight: FontWeightHelper.bold,
   );
   static TextStyle font16GrayBold = TextStyle(

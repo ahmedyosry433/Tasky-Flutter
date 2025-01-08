@@ -21,7 +21,7 @@ class OnboardingScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SizedBox(
-        height: MediaQuery.of(context).size.height,
+        height: MediaQuery.of(context).size.height * 0.97,
         child: Stack(
           children: [
             Image.asset(
@@ -43,16 +43,20 @@ class OnboardingScreen extends StatelessWidget {
                       style: TextStyles.font24BlackBold,
                     ),
                     verticalSpace(10),
-                    Text(
-                      "This productive tool is designed to help you better manage your task project-wise conveniently!",
-                      textAlign: TextAlign.center,
-                      style: TextStyles.font14GrayRegular,
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.68,
+                      child: Text(
+                        "This productive tool is designed to help you better manage your task project-wise conveniently!",
+                        textAlign: TextAlign.center,
+                        style: TextStyles.font14GrayRegular
+                            .copyWith(height: 1.8.h),
+                      ),
                     ),
                     verticalSpace(20),
                     AppTextButton(
                       imagePath: "assets/image/arrow_left.png",
                       buttonText: "Let's Start",
-                      textStyle: TextStyles.font14WhiteSemiBold,
+                      textStyle: TextStyles.font16WhiteBold,
                       onPressed: () {
                         context.pushReplacementNamed(Routes.loginScreen);
                       },

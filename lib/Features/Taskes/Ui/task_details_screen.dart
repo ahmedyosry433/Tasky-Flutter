@@ -200,7 +200,11 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
             onPressed: () {
               context.pop();
             },
-            icon: Image.asset('assets/image/arrow_to_left.png'),
+            icon: Image.asset(
+              'assets/image/arrow_to_left.png',
+              width: 24.w,
+              height: 24.h,
+            ),
           ),
           Text('Task Details', style: TextStyles.font16BlackBold),
         ],

@@ -64,8 +64,8 @@ class AppTextButton extends StatelessWidget {
             if (imagePath != null)
               Image.asset(
                 imagePath!,
-                width: 20.w,
-                height: 20.h,
+                width: 24.w,
+                height: 24.h,
               ),
             if (icon != null) icon!,
           ],

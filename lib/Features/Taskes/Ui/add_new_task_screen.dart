@@ -164,7 +164,11 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
             onPressed: () {
               context.pop();
             },
-            icon: Image.asset('assets/image/arrow_to_left.png'),
+            icon: Image.asset(
+              'assets/image/arrow_to_left.png',
+              width: 24.w,
+              height: 24.h,
+            ),
           ),
           Text('Add New Task', style: TextStyles.font16BlackBold),
         ],

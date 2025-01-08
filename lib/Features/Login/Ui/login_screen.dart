@@ -91,7 +91,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             verticalSpace(15),
                             AppTextButton(
                                 buttonText: "Sign in",
-                                textStyle: TextStyles.font14WhiteSemiBold,
+                                textStyle: TextStyles.font16WhiteBold,
                                 onPressed: () {
                                   login();
                                 }),

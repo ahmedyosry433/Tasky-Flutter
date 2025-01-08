@@ -302,7 +302,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
                     color: Colors.black,
                     size: 25.r,
                   )),
-              horizontalSpace(16),
+              horizontalSpace(10),
               IconButton(
                 onPressed: () {
                   BlocProvider.of<TaskCubit>(context).logoutCubit();

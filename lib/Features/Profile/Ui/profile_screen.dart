@@ -35,9 +35,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
               onPressed: () {
                 context.pop();
               },
-              icon: Image.asset('assets/image/arrow_to_left.png'),
+              icon: Image.asset(
+                'assets/image/arrow_to_left.png',
+                width: 24.w,
+                height: 24.h,
+              ),
             ),
-            Text('Profile', style: TextStyles.font18BlackBold),
+            Text('Profile', style: TextStyles.font16BlackBold),
           ],
         ),
         leadingWidth: 150.w,
@@ -63,12 +67,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label, style: TextStyles.font14GrayRegular),
+          Text(label, style: TextStyles.font12GrayMedium),
           verticalSpace(8),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(value, style: TextStyles.font17GrayBold),
+              Text(value, style: TextStyles.font18GrayBold),
               icon ?? const SizedBox(),
             ],
           ),

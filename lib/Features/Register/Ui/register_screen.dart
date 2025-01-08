@@ -28,17 +28,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
       body: SafeArea(
         child: SingleChildScrollView(
           child: SizedBox(
-            height: MediaQuery.of(context).size.height * 1.1,
+            height: MediaQuery.of(context).size.height * 0.89,
             child: Stack(
               children: [
                 Image.asset(
                   'assets/image/onboarging_img.png',
                   width: MediaQuery.of(context).size.width,
-                  height: MediaQuery.of(context).size.height * 0.55,
-                  fit: BoxFit.cover,
+                  height: MediaQuery.of(context).size.height * 0.50,
+                  fit: BoxFit.fill,
                 ),
                 Positioned(
-                  bottom: -10,
+                  bottom: 10,
                   left: 0,
                   right: 0,
                   child: Padding(
@@ -140,7 +140,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           verticalSpace(15),
                           AppTextButton(
                               buttonText: "Signup",
-                              textStyle: TextStyles.font14WhiteSemiBold,
+                              textStyle: TextStyles.font16WhiteBold,
                               onPressed: () {
                                 login(context);
                               }),
@@ -162,7 +162,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             ],
                           ),
                           _buildBlocLisenner(context),
-                          verticalSpace(40)
                         ],
                       ),
                     ),
