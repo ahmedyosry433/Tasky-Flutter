@@ -31,147 +31,96 @@ class _RegisterScreenState extends State<RegisterScreen> {
             height: MediaQuery.of(context).size.height * 0.89,
             child: Stack(
               children: [
-                Image.asset(
-                  'assets/image/onboarging_img.png',
-                  width: MediaQuery.of(context).size.width,
-                  height: MediaQuery.of(context).size.height * 0.50,
-                  fit: BoxFit.fill,
-                ),
+                _buildBackgroundImage(),
                 Positioned(
-                  bottom: 10,
-                  left: 0,
-                  right: 0,
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 20.w),
-                    child: Form(
-                      key: BlocProvider.of<RegisterCubit>(context)
-                          .registerFormKey,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Signup',
-                            style: TextStyles.font24BlackBold,
-                          ),
-                          verticalSpace(10),
-                          AppTextFormField(
-                            controller: BlocProvider.of<RegisterCubit>(context)
-                                .displayNameController,
-                            hintText: 'Name...',
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Please enter your name';
-                              }
-                              return null;
-                            },
-                            keyboardType: TextInputType.text,
-                          ),
-                          verticalSpace(14),
-                          IntlPhoneField(
-                            decoration:
-                                DecorationStyle.inputDecoration.copyWith(
-                              hintText: '123 456-7890',
-                            ),
-                            initialCountryCode: 'EG',
-                            onChanged: (phone) {
-                              BlocProvider.of<RegisterCubit>(context)
-                                  .phoneController
-                                  .text = phone.completeNumber;
-                            },
-                          ),
-                          AppTextFormField(
-                              controller:
-                                  BlocProvider.of<RegisterCubit>(context)
-                                      .experienceYearsController,
-                              hintText: "Years of experience...",
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Please enter your years of experience';
-                                }
-                                return null;
-                              },
-                              keyboardType: TextInputType.number),
-                          verticalSpace(14),
-                          _buildDropdown(),
-                          verticalSpace(14),
-                          AppTextFormField(
-                              controller:
-                                  BlocProvider.of<RegisterCubit>(context)
-                                      .addressController,
-                              hintText: "Address...",
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Please enter your address';
-                                }
-                                return null;
-                              },
-                              keyboardType: TextInputType.streetAddress),
-                          verticalSpace(14),
-                          AppTextFormField(
-                            maxLines: 1,
-                            controller: BlocProvider.of<RegisterCubit>(context)
-                                .passwordController,
-                            hintText: "Password",
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Please enter a password';
-                              }
-                              if (value.length < 6) {
-                                return 'Password must be at least 6 characters';
-                              }
-                              return null;
-                            },
-                            keyboardType: TextInputType.visiblePassword,
-                            isObscureText: _isPasswordVisible,
-                            suffixIcon: IconButton(
-                              icon: Icon(
-                                _isPasswordVisible
-                                    ? Icons.visibility_off
-                                    : Icons.visibility,
-                                color: Colors.grey,
-                              ),
-                              onPressed: () {
-                                setState(() {
-                                  _isPasswordVisible = !_isPasswordVisible;
-                                });
-                              },
-                            ),
-                          ),
-                          verticalSpace(15),
-                          AppTextButton(
-                              buttonText: "Signup",
-                              textStyle: TextStyles.font16WhiteBold,
-                              onPressed: () {
-                                login(context);
-                              }),
-                          verticalSpace(14),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text('Already have any account? ',
-                                  style: TextStyles.font14GrayRegular),
-                              GestureDetector(
-                                onTap: () {
-                                  context.pushNamed(Routes.loginScreen);
-                                },
-                                child: Text(
-                                  'Sign in',
-                                  style: TextStyles.font12PrimaryBold,
-                                ),
-                              ),
-                            ],
-                          ),
-                          _buildBlocLisenner(context),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
+                    bottom: 10,
+                    left: 0,
+                    right: 0,
+                    child: _buildRegistrationForm()),
               ],
             ),
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildBackgroundImage() {
+    return Image.asset(
+      'assets/image/onboarging_img.png',
+      width: MediaQuery.of(context).size.width,
+      height: MediaQuery.of(context).size.height * 0.50,
+      fit: BoxFit.fill,
+    );
+  }
+
+  Widget _buildRegistrationForm() {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 20.w),
+      child: Form(
+        key: BlocProvider.of<RegisterCubit>(context).registerFormKey,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildHeader(),
+            verticalSpace(10),
+            _buildNameField(),
+            verticalSpace(14),
+            _buildPhoneField(),
+            _buildExperienceYearsField(),
+            verticalSpace(14),
+            _buildDropdown(),
+            verticalSpace(14),
+            _buildAddressField(),
+            verticalSpace(14),
+            _buildPasswordField(),
+            verticalSpace(15),
+            _buildSignupButton(),
+            verticalSpace(14),
+            _buildSignInLink(),
+            _buildBlocLisenner(context),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHeader() {
+    return Text(
+      'Signup',
+      style: TextStyles.font24BlackBold,
+    );
+  }
+
+  Widget _buildNameField() {
+    return AppTextFormField(
+      controller: BlocProvider.of<RegisterCubit>(context).displayNameController,
+      hintText: 'Name...',
+      validator: _validateRequired('name'),
+      keyboardType: TextInputType.text,
+    );
+  }
+
+  Widget _buildPhoneField() {
+    return IntlPhoneField(
+      decoration: DecorationStyle.inputDecoration.copyWith(
+        hintText: '123 456-7890',
+      ),
+      initialCountryCode: 'EG',
+      onChanged: (phone) {
+        BlocProvider.of<RegisterCubit>(context).phoneController.text =
+            phone.completeNumber;
+      },
+    );
+  }
+
+  Widget _buildExperienceYearsField() {
+    return AppTextFormField(
+      controller:
+          BlocProvider.of<RegisterCubit>(context).experienceYearsController,
+      hintText: "Years of experience...",
+      validator: _validateRequired('years of experience'),
+      keyboardType: TextInputType.number,
     );
   }
 
@@ -203,50 +152,125 @@ class _RegisterScreenState extends State<RegisterScreen> {
       },
     );
   }
-}
 
-Widget _buildBlocLisenner(BuildContext context) {
-  return BlocListener<RegisterCubit, RegisterState>(
-    listenWhen: (previous, current) {
-      return previous != current;
-    },
-    listener: (context, state) {
-      if (state is RegisterLoading) {
-        showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (context) {
-            return const Center(child: CircularProgressIndicator());
+  Widget _buildAddressField() {
+    return AppTextFormField(
+      controller: BlocProvider.of<RegisterCubit>(context).addressController,
+      hintText: "Address...",
+      validator: _validateRequired('address'),
+      keyboardType: TextInputType.streetAddress,
+    );
+  }
+
+  Widget _buildPasswordField() {
+    return AppTextFormField(
+      maxLines: 1,
+      controller: BlocProvider.of<RegisterCubit>(context).passwordController,
+      hintText: "Password",
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'Please enter a password';
+        }
+        if (value.length < 6) {
+          return 'Password must be at least 6 characters';
+        }
+        return null;
+      },
+      keyboardType: TextInputType.visiblePassword,
+      isObscureText: _isPasswordVisible,
+      suffixIcon: IconButton(
+        icon: Icon(
+          _isPasswordVisible ? Icons.visibility_off : Icons.visibility,
+          color: Colors.grey,
+        ),
+        onPressed: () {
+          setState(() {
+            _isPasswordVisible = !_isPasswordVisible;
+          });
+        },
+      ),
+    );
+  }
+
+  Widget _buildSignupButton() {
+    return AppTextButton(
+        buttonText: "Signup",
+        textStyle: TextStyles.font16WhiteBold,
+        onPressed: () {
+          login(context);
+        });
+  }
+
+  Widget _buildSignInLink() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text('Already have any account? ', style: TextStyles.font14GrayRegular),
+        GestureDetector(
+          onTap: () {
+            context.pushNamed(Routes.loginScreen);
           },
-        );
-      }
-      if (state is RegisterSuccess) {
-        context.pop();
-
-        context.pushReplacementNamed(Routes.taskesScreen);
-      }
-      if (state is RegisterError) {
-        context.pop();
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("Something went wrong, Make sure Your Data"),
+          child: Text(
+            'Sign in',
+            style: TextStyles.font12PrimaryBold,
           ),
-        );
-      }
-    },
-    child: Container(),
-  );
-}
+        ),
+      ],
+    );
+  }
 
-void login(BuildContext context) {
-  if (BlocProvider.of<RegisterCubit>(context)
-      .registerFormKey
-      .currentState!
-      .validate()) {
-    BlocProvider.of<RegisterCubit>(context)
+  Widget _buildBlocLisenner(BuildContext context) {
+    return BlocListener<RegisterCubit, RegisterState>(
+      listenWhen: (previous, current) {
+        return previous != current;
+      },
+      listener: (context, state) {
+        if (state is RegisterLoading) {
+          showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (context) {
+              return const Center(child: CircularProgressIndicator());
+            },
+          );
+        }
+        if (state is RegisterSuccess) {
+          context.pop();
+
+          context.pushReplacementNamed(Routes.taskesScreen);
+        }
+        if (state is RegisterError) {
+          context.pop();
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text("Something went wrong, Make sure Your Data"),
+            ),
+          );
+        }
+      },
+      child: Container(),
+    );
+  }
+
+  String? Function(String?) _validateRequired(String fieldName) {
+    return (value) {
+      if (value == null || value.isEmpty) {
+        return 'Please enter your $fieldName';
+      }
+      return null;
+    };
+  }
+
+  void login(BuildContext context) {
+    if (BlocProvider.of<RegisterCubit>(context)
         .registerFormKey
         .currentState!
-        .save();
-    BlocProvider.of<RegisterCubit>(context).registerCubit();
+        .validate()) {
+      BlocProvider.of<RegisterCubit>(context)
+          .registerFormKey
+          .currentState!
+          .save();
+      BlocProvider.of<RegisterCubit>(context).registerCubit();
+    }
   }
 }
