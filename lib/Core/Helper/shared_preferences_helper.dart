@@ -40,19 +40,16 @@ class SharedPreferencesHelper {
 
   static setSecuredString(String key, String value) async {
     const flutterSecureStorage = FlutterSecureStorage();
-    debugPrint("setSecuredString : " + key + " :___Value____: " + value);
     return await flutterSecureStorage.write(key: key, value: value);
   }
 
   static getSecuredString(String key) async {
     const flutterSecureStorage = FlutterSecureStorage();
-    debugPrint("getSecuredString : " + key);
     return await flutterSecureStorage.read(key: key) ?? '';
   }
 
   static removeAllKeysSecured() async {
     const flutterSecureStorage = FlutterSecureStorage();
-    debugPrint("Removing all keys");
     await flutterSecureStorage.deleteAll();
   }
 }
