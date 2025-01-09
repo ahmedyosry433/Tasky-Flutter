@@ -1,4 +1,6 @@
 // ignore: depend_on_referenced_packages
+import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SharedPreferencesHelper {
@@ -34,5 +36,23 @@ class SharedPreferencesHelper {
   static Future<bool> removeValueForKey(String key) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.remove(key);
+  }
+
+  static setSecuredString(String key, String value) async {
+    const flutterSecureStorage = FlutterSecureStorage();
+    debugPrint("setSecuredString : " + key + " :___Value____: " + value);
+    return await flutterSecureStorage.write(key: key, value: value);
+  }
+
+  static getSecuredString(String key) async {
+    const flutterSecureStorage = FlutterSecureStorage();
+    debugPrint("getSecuredString : " + key);
+    return await flutterSecureStorage.read(key: key) ?? '';
+  }
+
+  static removeAllKeysSecured() async {
+    const flutterSecureStorage = FlutterSecureStorage();
+    debugPrint("Removing all keys");
+    await flutterSecureStorage.deleteAll();
   }
 }

@@ -17,7 +17,7 @@ class ApiService {
   ApiService(this._dio);
 
   Future<String> getRefreshToken() async {
-    return await SharedPreferencesHelper.getValueForKey('reftoken');
+    return await SharedPreferencesHelper.getSecuredString('reftoken');
   }
 
   Future register({required UserModel registerModel}) async {
@@ -46,8 +46,9 @@ class ApiService {
         options: Options(
           method: 'GET',
         ));
-    await SharedPreferencesHelper.setValueForKey(
+    await SharedPreferencesHelper.setSecuredString(
         "token", "${response.data["access_token"]}");
+
     DioFactory.setTokenAfterLogin(response.data["access_token"]);
 
     return response;

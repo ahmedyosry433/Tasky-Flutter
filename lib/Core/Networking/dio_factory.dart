@@ -27,7 +27,7 @@ class DioFactory {
     dio?.options.headers = ({
       'Content-Type': 'application/json',
       'Authorization':
-          'Bearer ${await SharedPreferencesHelper.getValueForKey('token')}',
+          'Bearer ${await SharedPreferencesHelper.getSecuredString('token')}',
     });
   }
 

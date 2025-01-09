@@ -27,12 +27,12 @@ class LoginCubit extends Cubit<LoginState> {
         loginModel: LoginModel(
             phone: phoneController.text, password: passwordController.text),
       );
-      await SharedPreferencesHelper.setValueForKey(
+      await SharedPreferencesHelper.setSecuredString(
           'token', response["access_token"]);
 
-      await SharedPreferencesHelper.setValueForKey(
+      await SharedPreferencesHelper.setSecuredString(
           'reftoken', response["refresh_token"]);
-          
+
       DioFactory.setTokenAfterLogin(response["access_token"]);
 
       emit(LoginSuccess());

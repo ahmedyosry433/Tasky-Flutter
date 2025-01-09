@@ -36,7 +36,7 @@ class TaskCubit extends Cubit<TaskState> {
     emit(LogoutLoading());
     try {
       await _taskRepo.logoutRepo();
-      await SharedPreferencesHelper.removeAllKeys();
+      await SharedPreferencesHelper.removeAllKeysSecured();
       emit(LogoutSuccess());
     } catch (e) {
       emit(LogoutError(e.toString()));

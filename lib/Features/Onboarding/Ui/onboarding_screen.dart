@@ -3,7 +3,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:tasky/Core/Helper/extensions.dart';
-import 'package:tasky/Core/Helper/shared_preferences_helper.dart';
 import 'package:tasky/Core/Helper/spacing.dart';
 import 'package:tasky/Core/Router/routes.dart';
 import 'package:tasky/Core/Theme/style.dart';
@@ -11,11 +10,6 @@ import 'package:tasky/Core/Widgets/app_text_button.dart';
 
 class OnboardingScreen extends StatelessWidget {
   const OnboardingScreen({super.key});
-
-  Future<bool> _checkToken() async {
-    final token = await SharedPreferencesHelper.getValueForKey('token');
-    return token != null;
-  }
 
   @override
   Widget build(BuildContext context) {

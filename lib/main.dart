@@ -17,10 +17,16 @@ void main() async {
 }
 
 checkIfLoggedInUser() async {
-  String? userToken = await SharedPreferencesHelper.getValueForKey('token');
+  print("____________!_______");
+  String? userToken = await SharedPreferencesHelper.getSecuredString('token');
+  print("____________2_______");
   if (userToken == null || userToken.isEmpty) {
+    print("____________3_______");
     isLogedInUser = false;
+    print("____________4_______");
   } else {
+    print("____________5_______");
     isLogedInUser = true;
   }
+  print("____________6_______");
 }
