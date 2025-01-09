@@ -353,10 +353,11 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
 
   Widget _buildAddTaskButton() {
     return AppTextButton(
-      buttonText: "Add Task",
-      textStyle: TextStyles.font19WhiteBold,
-      onPressed: () => _taskCubit.addTaskCubit(),
-    );
+        buttonText: "Add Task",
+        textStyle: TextStyles.font19WhiteBold,
+        onPressed: () {
+          _taskCubit.addTaskCubit();
+        });
   }
 
   Widget _buildAddTaskListener() {
