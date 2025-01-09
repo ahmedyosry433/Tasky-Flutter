@@ -367,7 +367,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
         final tasks = BlocProvider.of<TaskCubit>(context).tasksList;
         final newTasks = BlocProvider.of<TaskCubit>(context).newTasksList;
         final screenHeight = MediaQuery.of(context).size.height;
-        const taskItemHeight = 100.0;
+        final taskItemHeight = 100.0.h;
         final totalTasksHeight = tasks.length * taskItemHeight;
 
         return Expanded(

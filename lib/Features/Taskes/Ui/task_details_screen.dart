@@ -46,77 +46,7 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
             padding: EdgeInsets.all(16.r),
             child: Column(
               children: [
-                BlocBuilder<TaskCubit, TaskState>(
-                  builder: (context, state) {
-                    if (state is OneTaskLoading) {
-                      return const Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    } else if (state is OneTaskSuccess) {
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Center(
-                            child: SizedBox(
-                              width: 300.w,
-                              height: 200.h,
-                              child: AppCasedNetworkImage(
-                                imageUrl:
-                                    '${ApiConstants.apiBaseUrl}${ApiConstants.getImageUrl}${state.task.imageUrl}',
-                                fit: BoxFit.cover,
-                                width: 300.w,
-                                height: 200.h,
-                              ),
-                            ),
-                          ),
-                          Text(state.task.title,
-                              style: TextStyles.font24BlackBold),
-                          verticalSpace(8),
-                          Text(state.task.description,
-                              style: TextStyles.font14GrayRegular),
-                          verticalSpace(20),
-                          _buildInfoCard(
-                            label: 'End Date',
-                            value: '30 June, 2022',
-                            icon: Image.asset('assets/image/calendar.png'),
-                          ),
-                          verticalSpace(10),
-                          _buildDropdownShapCard(
-                              label: 'Status', value: state.task.status),
-                          verticalSpace(10),
-                          _buildDropdownShapCard(
-                            label: 'Priority',
-                            value: '${state.task.priority} Priority',
-                            icon: const Icon(Icons.flag_outlined,
-                                color: ColorsManager.primryColor),
-                          ),
-                          verticalSpace(20),
-                          Center(
-                            child: QrImageView(
-                              data: BlocProvider.of<TaskCubit>(context)
-                                  .oneTask!
-                                  .id,
-                              version: QrVersions.auto,
-                              size: 250.r,
-                              backgroundColor: Colors.white,
-                            ),
-                          ),
-                        ],
-                      );
-                    } else if (state is OneTaskError) {
-                      return Center(
-                        child: Padding(
-                          padding: EdgeInsets.only(top: 20.h),
-                          child: Text(
-                            'Something went wrong.',
-                            style: TextStyles.font18BlackBold,
-                          ),
-                        ),
-                      );
-                    }
-                    return const SizedBox();
-                  },
-                ),
+                _buildBlocBuilder(),
                 _buildDeleteBlocLisener(),
                 _buildEditBlocLisener(),
               ],
@@ -210,6 +140,87 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
         ],
       ),
       leadingWidth: 200.w,
+    );
+  }
+
+  Widget _buildBlocBuilder() {
+    return BlocBuilder<TaskCubit, TaskState>(
+      builder: (context, state) {
+        if (state is OneTaskLoading) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        } else if (state is OneTaskSuccess) {
+          return _buildTaskInfo(task: state.task);
+        } else if (state is OneTaskError) {
+          return Center(
+            child: Padding(
+              padding: EdgeInsets.only(top: 20.h),
+              child: Text(
+                'Something went wrong.',
+                style: TextStyles.font18BlackBold,
+              ),
+            ),
+          );
+        }
+        return const SizedBox();
+      },
+    );
+  }
+
+  Widget _buildTaskInfo({required TaskModel task}) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildTaskImage(task.imageUrl),
+        Text(task.title, style: TextStyles.font24BlackBold),
+        verticalSpace(8),
+        Text(task.description, style: TextStyles.font14GrayRegular),
+        verticalSpace(20),
+        _buildInfoCard(
+          label: 'End Date',
+          value: '30 June, 2022',
+          icon: Image.asset('assets/image/calendar.png'),
+        ),
+        verticalSpace(10),
+        _buildDropdownShapCard(label: 'Status', value: task.status),
+        verticalSpace(10),
+        _buildDropdownShapCard(
+          label: 'Priority',
+          value: '${task.priority} Priority',
+          icon:
+              const Icon(Icons.flag_outlined, color: ColorsManager.primryColor),
+        ),
+        verticalSpace(20),
+        _buildQrCode(),
+      ],
+    );
+  }
+
+  Widget _buildTaskImage(String imageUrl) {
+    return Center(
+      child: SizedBox(
+        width: 300.w,
+        height: 200.h,
+        child: AppCasedNetworkImage(
+          imageUrl:
+              '${ApiConstants.apiBaseUrl}${ApiConstants.getImageUrl}$imageUrl',
+          fit: BoxFit.cover,
+          width: 300.w,
+          height: 200.h,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildQrCode() {
+    return Center(
+      child: QrImageView(
+        data: BlocProvider.of<TaskCubit>(context).oneTask!.id,
+        version: QrVersions.auto,
+        size: 250.r,
+        backgroundColor: Colors.white,
+      ),
     );
   }
 
