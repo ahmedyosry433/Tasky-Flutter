@@ -8,8 +8,8 @@ import 'package:tasky/tasky-app.dart';
 
 bool isLogedInUser = false;
 void main() async {
-  setupGetit();
   WidgetsFlutterBinding.ensureInitialized();
+  setupGetit();
   await checkIfLoggedInUser();
   runApp(TaskyApp(
     appRouter: AppRouter(),

@@ -117,7 +117,7 @@ class TaskCubit extends Cubit<TaskState> {
   void editTaskCubit({required TaskModel task}) async {
     emit(EditTaskLoading());
     try {
-     var res= await _taskRepo.editTaskRepo(task: task);
+      var res = await _taskRepo.editTaskRepo(task: task);
       emit(EditTaskSuccess(TaskModel.fromJson(res.data)));
     } catch (e) {
       emit(EditTaskError(e.toString()));
@@ -150,7 +150,7 @@ class TaskCubit extends Cubit<TaskState> {
 
       await _taskRepo.addTaskRepo(
         task: AddTaskModel(
-          image: res.imageUrl,
+          image: res.imageUrl == '' ? "image.png" : res.imageUrl,
           title: res.title,
           desc: res.description,
           priority: res.priority,
