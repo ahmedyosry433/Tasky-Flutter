@@ -1,35 +1,35 @@
-import 'package:tasky/Core/Networking/api_service.dart';
+import 'package:tasky/Features/Taskes/Data/Apis/task_apis_service.dart';
 import 'package:tasky/Features/Taskes/Data/Model/task_model.dart';
 
 class TaskRepo {
-  final ApiService _api_service;
-  TaskRepo(this._api_service);
+  final TaskApisService _taskApisService;
+  TaskRepo(this._taskApisService);
 
   Future logoutRepo() {
-    return _api_service.logout();
+    return _taskApisService.logout();
   }
 
   Future tasksListRepo({required int pageNum}) {
-    return _api_service.tasksList(pageNum: pageNum);
+    return _taskApisService.tasksList(pageNum);
   }
 
   Future deleteTaskRepo({required String taskID}) {
-    return _api_service.deleteTask(taskID: taskID);
+    return _taskApisService.deleteTask(taskID);
   }
 
   Future getOneTaskRepo({required String taskID}) {
-    return _api_service.getOneTask(taskID: taskID);
+    return _taskApisService.getOneTask(taskID);
   }
 
   Future editTaskRepo({required TaskModel task}) {
-    return _api_service.editTask(task: task);
+    return _taskApisService.editTask(task);
   }
 
   Future addTaskRepo({required AddTaskModel task}) {
-    return _api_service.addTask(addTask: task);
+    return _taskApisService.addTask(task);
   }
 
   Future uploadImageRepo({required String ImagePath}) {
-    return _api_service.uploadImage(imagePath: ImagePath);
+    return _taskApisService.uploadImage(ImagePath);
   }
 }

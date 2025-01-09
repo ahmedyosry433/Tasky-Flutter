@@ -48,7 +48,7 @@ class TaskCubit extends Cubit<TaskState> {
     try {
       newTasksList.clear();
       var res = await _taskRepo.tasksListRepo(pageNum: pageNum);
-      for (var task in res.data) {
+      for (var task in res) {
         newTasksList.add(TaskModel.fromJson(task));
         allTasks.add(TaskModel.fromJson(task));
       }
@@ -56,12 +56,12 @@ class TaskCubit extends Cubit<TaskState> {
 
       if (pageNum == 1) {
         allTasks.clear();
-        for (var task in res.data) {
+        for (var task in res) {
           allTasks.add(TaskModel.fromJson(task));
         }
         tasksList = allTasks;
       } else {
-        for (var task in res.data) {
+        for (var task in res) {
           allTasks.add(TaskModel.fromJson(task));
         }
         tasksList = allTasks;
@@ -118,7 +118,7 @@ class TaskCubit extends Cubit<TaskState> {
     emit(EditTaskLoading());
     try {
       var res = await _taskRepo.editTaskRepo(task: task);
-      emit(EditTaskSuccess(TaskModel.fromJson(res.data)));
+      emit(EditTaskSuccess(TaskModel.fromJson(res)));
     } catch (e) {
       emit(EditTaskError(e.toString()));
     }
@@ -136,7 +136,7 @@ class TaskCubit extends Cubit<TaskState> {
             dueDate: DateFormat('yyyy - M - d').format(dueDate!).toString()),
       );
 
-      emit(AddTaskSuccess(TaskModel.fromJson(res.data)));
+      emit(AddTaskSuccess(TaskModel.fromJson(res)));
     } catch (e) {
       emit(AddTaskError(e.toString()));
     }

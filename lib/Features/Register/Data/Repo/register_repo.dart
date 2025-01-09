@@ -1,11 +1,11 @@
-import 'package:tasky/Core/Networking/api_service.dart';
+import 'package:tasky/Features/Register/Data/Apis/register_apis_service.dart';
 import 'package:tasky/Features/Register/Data/Model/register_model.dart';
 
 class RegisterRepo {
-  final ApiService apiService;
-  RegisterRepo({required this.apiService});
+  final RegisterApisService _registerApisService;
+  RegisterRepo(this._registerApisService);
 
   Future registerRepo({required UserModel registerModel}) async {
-    return await apiService.register(registerModel: registerModel);
+    return await _registerApisService.register(registerModel);
   }
 }

@@ -12,32 +12,88 @@ import 'package:tasky/Features/Taskes/Data/Model/task_model.dart';
 import '../Helper/shared_preferences_helper.dart';
 import 'package:http/http.dart' as http;
 
+class BaseApiService {
+  final Dio _dio;
+
+  BaseApiService(this._dio);
+
+  Future<dynamic> get(String endpoint, {Map<String, dynamic>? params}) async {
+    try {
+      final response = await _dio.get(endpoint, queryParameters: params);
+      return response.data;
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 401) {
+        await _refreshToken();
+        return get(endpoint, params: params);
+      }
+      rethrow;
+    }
+  }
+
+  Future<dynamic> post(String endpoint, {dynamic data}) async {
+    try {
+      final response = await _dio.post(endpoint, data: data);
+      return response.data;
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 401) {
+        await _refreshToken();
+        return post(endpoint, data: data);
+      }
+      rethrow;
+    }
+  }
+
+  Future<dynamic> put(String endpoint, {dynamic data}) async {
+    try {
+      final response = await _dio.put(endpoint, data: data);
+      return response.data;
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 401) {
+        await _refreshToken();
+        return put(endpoint, data: data);
+      }
+      rethrow;
+    }
+  }
+
+  Future<dynamic> delete(String endpoint) async {
+    try {
+      final response = await _dio.delete(endpoint);
+      return response.data;
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 401) {
+        await _refreshToken();
+        return delete(endpoint);
+      }
+      rethrow;
+    }
+  }
+
+  Future<String> getRefreshToken() async {
+    return await SharedPreferencesHelper.getSecuredString('reftoken');
+  }
+
+  Future _refreshToken() async {
+    Response response = await _dio.request(
+        "${ApiConstants.apiBaseUrl}${ApiConstants.refreshToken}${await getRefreshToken()}",
+        options: Options(
+          method: 'GET',
+        ));
+    await SharedPreferencesHelper.setSecuredString(
+        "token", "${response.data["access_token"]}");
+
+    DioFactory.setTokenAfterLogin(response.data["access_token"]);
+
+    return response;
+  }
+}
+
 class ApiService {
   final Dio _dio;
   ApiService(this._dio);
 
   Future<String> getRefreshToken() async {
     return await SharedPreferencesHelper.getSecuredString('reftoken');
-  }
-
-  Future register({required UserModel registerModel}) async {
-    Response response =
-        await _dio.request(ApiConstants.apiBaseUrl + ApiConstants.registerUrl,
-            data: registerModel,
-            options: Options(
-              method: 'POST',
-            ));
-    return response.data;
-  }
-
-  Future login({required LoginModel loginModel}) async {
-    Response response =
-        await _dio.request(ApiConstants.apiBaseUrl + ApiConstants.loginrUrl,
-            data: loginModel,
-            options: Options(
-              method: 'POST',
-            ));
-    return response.data;
   }
 
   Future refreshToken() async {
@@ -52,24 +108,6 @@ class ApiService {
     DioFactory.setTokenAfterLogin(response.data["access_token"]);
 
     return response;
-  }
-
-  Future profile() async {
-    try {
-      Response response = await _dio.request(
-        ApiConstants.apiBaseUrl + ApiConstants.profilerUrl,
-        options: Options(
-          method: 'GET',
-        ),
-      );
-      return response.data;
-    } on DioException catch (e) {
-      if (e.response!.statusCode == 401) {
-        await refreshToken();
-
-        return profile;
-      }
-    }
   }
 
   Future logout() async {

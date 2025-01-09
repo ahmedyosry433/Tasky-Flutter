@@ -1,10 +1,10 @@
-import 'package:tasky/Core/Networking/api_service.dart';
+import 'package:tasky/Features/Profile/Data/Apis/profile_apis_service.dart';
 
 class ProfileRepo {
-  ApiService _apiService;
-  ProfileRepo(this._apiService);
+  ProfileApisService _profileApisService;
+  ProfileRepo(this._profileApisService);
 
   Future getProfile() async {
-    return _apiService.profile();
+    return _profileApisService.getProfile();
   }
 }
