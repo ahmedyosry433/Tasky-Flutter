@@ -89,7 +89,7 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
                       actions: [
                         TextButton(
                           onPressed: () {
-                            dialogContext.pop(); // Close the dialog
+                            dialogContext.pop();
                           },
                           child: const Text("Cancel"),
                         ),
@@ -97,7 +97,7 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
                           onPressed: () {
                             BlocProvider.of<TaskCubit>(context)
                                 .deleteTaskCubit(taskId: widget.task.id);
-                            dialogContext.pop(); // Close the dialog
+                            dialogContext.pop();
                           },
                           child: const Text(
                             "Delete",
@@ -128,7 +128,7 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
         children: [
           IconButton(
             onPressed: () {
-              context.pop();
+              context.pushReplacementNamed(Routes.taskesScreen);
             },
             icon: Image.asset(
               'assets/image/arrow_to_left.png',

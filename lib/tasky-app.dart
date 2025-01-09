@@ -22,7 +22,8 @@ class TaskyApp extends StatelessWidget {
           useMaterial3: true,
         ),
         debugShowCheckedModeBanner: false,
-        initialRoute:isLogedInUser?Routes.taskesScreen: Routes.onboardingScreen,
+        initialRoute:
+            isLogedInUser ? Routes.taskesScreen : Routes.onboardingScreen,
         onGenerateRoute: appRouter.onGenerateRoute,
         builder: (context, widget) {
           return MediaQuery(
