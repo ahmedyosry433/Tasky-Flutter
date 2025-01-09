@@ -1,4 +1,4 @@
-// ignore_for_file: unused_element, unused_field, use_build_context_synchronously
+// ignore_for_file: use_build_context_synchronously
 
 import 'dart:io';
 
@@ -11,332 +11,368 @@ import 'package:intl/intl.dart';
 import 'package:tasky/Core/Helper/extensions.dart';
 import 'package:tasky/Core/Helper/spacing.dart';
 import 'package:tasky/Core/Router/routes.dart';
+import 'package:tasky/Core/Theme/colors.dart';
 import 'package:tasky/Core/Theme/style.dart';
 import 'package:tasky/Core/Widgets/app_text_button.dart';
 import 'package:tasky/Core/Widgets/app_text_form_field.dart';
 import 'package:tasky/Core/Widgets/app_text_form_field_with_hint.dart';
-import 'package:tasky/Core/theme/colors.dart';
-import 'package:tasky/Features/Taskes/Data/Model/task_model.dart';
 import 'package:tasky/Features/Taskes/Logic/cubit/task_cubit.dart';
 
 class AddTaskScreen extends StatefulWidget {
   const AddTaskScreen({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
-  _AddTaskScreenState createState() => _AddTaskScreenState();
+  State<AddTaskScreen> createState() => _AddTaskScreenState();
 }
 
 class _AddTaskScreenState extends State<AddTaskScreen> {
-  TaskPriority _priority = TaskPriority.medium;
   final ImagePicker _picker = ImagePicker();
+  late final TaskCubit _taskCubit;
 
-  DateTime? _selectedDate;
-
-  Future<void> _pickDate(BuildContext context) async {
-    final DateTime? pickedDate = await showDatePicker(
-      context: context,
-      initialDate:
-          BlocProvider.of<TaskCubit>(context).dueDate ?? DateTime.now(),
-      firstDate: DateTime(2023),
-      lastDate: DateTime(2100),
-    );
-
-    if (pickedDate != null &&
-        pickedDate != BlocProvider.of<TaskCubit>(context).dueDate) {
-      setState(() {
-        BlocProvider.of<TaskCubit>(context).dueDate = pickedDate;
-      });
-    }
-  }
-
-  Future<void> _pickImage(BuildContext context) async {
-    try {
-      final XFile? pickedFile = await showDialog<XFile>(
-        context: context,
-        builder: (BuildContext dialogContext) {
-          return AlertDialog(
-            title: const Text("Choose Image Source"),
-            actions: [
-              TextButton.icon(
-                icon: const Icon(Icons.camera_alt),
-                label: const Text("Camera"),
-                onPressed: () async {
-                  final picked =
-                      await _picker.pickImage(source: ImageSource.camera);
-                  dialogContext.pop();
-                  setState(() {
-                    context.read<TaskCubit>().addImagePickedUrl =
-                        File(picked!.path);
-                  });
-                  BlocProvider.of<TaskCubit>(context).uploadImageCubit(
-                      imagePath: File(picked!.path), editOrAdd: 'add');
-                },
-              ),
-              TextButton.icon(
-                icon: const Icon(Icons.photo_library),
-                label: const Text("Gallery"),
-                onPressed: () async {
-                  final picked =
-                      await _picker.pickImage(source: ImageSource.gallery);
-                  dialogContext.pop();
-                  setState(() {
-                    context.read<TaskCubit>().addImagePickedUrl =
-                        File(picked!.path);
-                  });
-                  BlocProvider.of<TaskCubit>(context).uploadImageCubit(
-                      imagePath: File(picked!.path), editOrAdd: 'add');
-                },
-              ),
-            ],
-          );
-        },
-      );
-
-      if (pickedFile != null) {
-        setState(() {
-          context.read<TaskCubit>().imagePickedUrl = File(pickedFile.path);
-        });
-      }
-    } catch (e) {
-      throw Exception(e);
-    }
+  @override
+  void initState() {
+    super.initState();
+    _taskCubit = context.read<TaskCubit>();
   }
 
   @override
   Widget build(BuildContext context) {
-    final bloc = BlocProvider.of<TaskCubit>(context);
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(40.h),
-        child: _buildAppbar(context),
-      ),
+      appBar: _buildAppBar(),
       body: SingleChildScrollView(
         padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 25.h),
         child: Column(
           children: [
             _buildImagePicker(),
             verticalSpace(20),
-            AppTextFormFieldWithTopHint(
-              topHintText: "Task title",
-              appTextFormField: AppTextFormField(
-                  controller: bloc.titleController,
-                  hintText: "Enter title here...",
-                  validator: (valid) {},
-                  keyboardType: TextInputType.text),
-            ),
-            verticalSpace(20),
-            AppTextFormFieldWithTopHint(
-              topHintText: "Task Description",
-              appTextFormField: AppTextFormField(
-                controller: bloc.descController,
-                maxLines: 5,
-                hintText: "Enter description here...",
-                validator: (valid) {},
-                keyboardType: TextInputType.text,
-              ),
-            ),
-            verticalSpace(20),
-            _buildPrioritySelectorDropdown(),
-            verticalSpace(20),
-            _buildDueDateFieldWithHint(hintText: "Due date"),
+            _buildTaskForm(),
             verticalSpace(40),
-            AppTextButton(
-                buttonText: "Add Task",
-                textStyle: TextStyles.font19WhiteBold,
-                onPressed: () {
-                  BlocProvider.of<TaskCubit>(context).addTaskCubit();
-                }),
-            _buildAddTaskBlocLisener(),
+            _buildAddTaskButton(),
+            _buildAddTaskListener(),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildAppbar(BuildContext context) {
-    return AppBar(
-      backgroundColor: Colors.white,
-      elevation: 0,
-      leading: Row(
-        children: [
-          IconButton(
-            onPressed: () {
-              context.pop();
-            },
-            icon: Image.asset(
-              'assets/image/arrow_to_left.png',
-              width: 24.w,
-              height: 24.h,
+  PreferredSize _buildAppBar() {
+    return PreferredSize(
+      preferredSize: Size.fromHeight(40.h),
+      child: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        leading: Row(
+          children: [
+            IconButton(
+              onPressed: () => context.pop(),
+              icon: Image.asset(
+                'assets/image/arrow_to_left.png',
+                width: 24.w,
+                height: 24.h,
+              ),
             ),
-          ),
-          Text('Add New Task', style: TextStyles.font16BlackBold),
-        ],
+            Text('Add New Task', style: TextStyles.font16BlackBold),
+          ],
+        ),
+        leadingWidth: 200.w,
       ),
-      leadingWidth: 200.w,
     );
+  }
+
+  Widget _buildTaskForm() {
+    return Column(
+      children: [
+        _buildTitleField(),
+        verticalSpace(20),
+        _buildDescriptionField(),
+        verticalSpace(20),
+        _buildPrioritySelector(),
+        verticalSpace(20),
+        _buildDueDateField(),
+      ],
+    );
+  }
+
+  Widget _buildTitleField() {
+    return AppTextFormFieldWithTopHint(
+      topHintText: "Task title",
+      appTextFormField: AppTextFormField(
+        controller: _taskCubit.titleController,
+        hintText: "Enter title here...",
+        validator: _validateRequired,
+        keyboardType: TextInputType.text,
+      ),
+    );
+  }
+
+  Widget _buildDescriptionField() {
+    return AppTextFormFieldWithTopHint(
+      topHintText: "Task Description",
+      appTextFormField: AppTextFormField(
+        controller: _taskCubit.descController,
+        maxLines: 5,
+        hintText: "Enter description here...",
+        validator: _validateRequired,
+        keyboardType: TextInputType.text,
+      ),
+    );
+  }
+
+  String? _validateRequired(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'This field is required';
+    }
+    return null;
   }
 
   Widget _buildImagePicker() {
     return GestureDetector(
-      onTap: () {
-        _pickImage(context);
-      },
+      onTap: () => _showImagePickerDialog(),
       child: Column(
         children: [
-          BlocBuilder<TaskCubit, TaskState>(
-            builder: (context, state) {
-              if (state is UplaodImageLoading) {
-                return const Center(
-                  child: CircularProgressIndicator(),
-                );
-              } else if (state is UplaodImageSuccess) {
-                return Padding(
-                  padding: EdgeInsets.only(bottom: 20.h),
-                  child:
-                      BlocProvider.of<TaskCubit>(context).addImagePickedUrl !=
-                              null
-                          ? Image.file(
-                              BlocProvider.of<TaskCubit>(context)
-                                  .addImagePickedUrl!,
-                              fit: BoxFit.cover,
-                              width: 100.w,
-                              height: 100.h,
-                            )
-                          : const SizedBox.shrink(),
-                );
-              } else if (state is UplaodImageError) {
-                return const Text("Something went wrong");
-              }
-              return const SizedBox.shrink();
-            },
-          ),
-          DottedBorder(
-              color: ColorsManager.primryColor,
-              strokeWidth: 1,
-              dashPattern: const [6, 3],
-              borderType: BorderType.RRect,
-              radius: Radius.circular(10.r),
-              child: Container(
-                height: 50.h,
-                alignment: Alignment.center,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.add_photo_alternate_outlined,
-                        size: 32.r, color: ColorsManager.primryColor),
-                    const SizedBox(height: 8),
-                    Text('Add Img', style: TextStyles.font16PrimaryBold),
-                  ],
-                ),
-              )),
+          _buildSelectedImage(),
+          _buildImagePickerButton(),
         ],
       ),
     );
   }
 
-  Widget _buildDueDateFieldWithHint({required String hintText}) {
+  Widget _buildSelectedImage() {
+    return BlocBuilder<TaskCubit, TaskState>(
+      builder: (context, state) {
+        if (state is UplaodImageLoading) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        if (state is UplaodImageSuccess &&
+            _taskCubit.addImagePickedUrl != null) {
+          return Padding(
+            padding: EdgeInsets.only(bottom: 20.h),
+            child: Image.file(
+              _taskCubit.addImagePickedUrl!,
+              fit: BoxFit.cover,
+              width: 100.w,
+              height: 100.h,
+            ),
+          );
+        }
+
+        if (state is UplaodImageError) {
+          return const Text("Something went wrong");
+        }
+
+        return const SizedBox.shrink();
+      },
+    );
+  }
+
+  Widget _buildImagePickerButton() {
+    return DottedBorder(
+      color: ColorsManager.primryColor,
+      strokeWidth: 1,
+      dashPattern: const [6, 3],
+      borderType: BorderType.RRect,
+      radius: Radius.circular(10.r),
+      child: Container(
+        height: 50.h,
+        alignment: Alignment.center,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.add_photo_alternate_outlined,
+              size: 32.r,
+              color: ColorsManager.primryColor,
+            ),
+            horizontalSpace(8),
+            Text('Add Img', style: TextStyles.font16PrimaryBold),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _showImagePickerDialog() async {
+    final XFile? pickedFile = await showDialog<XFile>(
+      context: context,
+      builder: (BuildContext dialogContext) => AlertDialog(
+        title: const Text("Choose Image Source"),
+        actions: [
+          _buildImageSourceButton(
+            icon: Icons.camera_alt,
+            label: "Camera",
+            source: ImageSource.camera,
+          ),
+          _buildImageSourceButton(
+            icon: Icons.photo_library,
+            label: "Gallery",
+            source: ImageSource.gallery,
+          ),
+        ],
+      ),
+    );
+
+    if (pickedFile != null) {
+      setState(() {
+        _taskCubit.addImagePickedUrl = File(pickedFile.path);
+      });
+    }
+  }
+
+  Widget _buildImageSourceButton({
+    required IconData icon,
+    required String label,
+    required ImageSource source,
+  }) {
+    return TextButton.icon(
+      icon: Icon(icon),
+      label: Text(label),
+      onPressed: () async {
+        final picked = await _picker.pickImage(source: source);
+        if (picked != null) {
+          context.pop();
+          final imageFile = File(picked.path);
+          setState(() {
+            _taskCubit.addImagePickedUrl = imageFile;
+          });
+          _taskCubit.uploadImageCubit(imagePath: imageFile, editOrAdd: 'add');
+        }
+      },
+    );
+  }
+
+  Widget _buildPrioritySelector() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(hintText, style: TextStyles.font12GrayRegular),
+        Text("Priority", style: TextStyles.font12GrayRegular),
+        verticalSpace(10),
+        _buildPriorityDropdown(),
+      ],
+    );
+  }
+
+  Widget _buildPriorityDropdown() {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+      decoration: BoxDecoration(
+        color: ColorsManager.lightPrimryColor,
+        borderRadius: BorderRadius.circular(8.r),
+      ),
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton<String>(
+          value: _taskCubit.selectedPriority,
+          isExpanded: true,
+          icon: Image.asset('assets/image/arrow_down.png', width: 24.w),
+          items: _buildPriorityItems(),
+          onChanged: (newValue) {
+            if (newValue != null) {
+              setState(() {
+                _taskCubit.selectedPriority = newValue;
+              });
+            }
+          },
+        ),
+      ),
+    );
+  }
+
+  List<DropdownMenuItem<String>> _buildPriorityItems() {
+    return ['low', 'medium', 'high'].map((priority) {
+      return DropdownMenuItem<String>(
+        value: priority,
+        child: Row(
+          children: [
+            Icon(
+              Icons.flag_outlined,
+              size: 20.r,
+              color: ColorsManager.primryColor,
+            ),
+            horizontalSpace(8),
+            Text(
+              "$priority Priority",
+              style: TextStyles.font16PrimaryBold,
+            ),
+          ],
+        ),
+      );
+    }).toList();
+  }
+
+  Widget _buildDueDateField() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text("Due date", style: TextStyles.font12GrayRegular),
         verticalSpace(10),
         AppTextFormField(
           hintText: "choose due date...",
-          validator: (value) {
-            if (value == null || value.isEmpty) {
-              return 'Please select a date';
-            }
-            return null;
-          },
+          validator: _validateRequired,
           keyboardType: TextInputType.datetime,
-          suffixIcon: IconButton(
-            icon: Icon(
-              Icons.calendar_month_outlined,
-              size: 24.r,
-              color: ColorsManager.primryColor,
-            ),
-            onPressed: () => _pickDate(context),
-          ),
+          suffixIcon: _buildDatePickerIcon(),
           readOnly: true,
-          controller: TextEditingController(
-              text: BlocProvider.of<TaskCubit>(context).dueDate == null
-                  ? ''
-                  : DateFormat('yyyy - M - d')
-                      .format(BlocProvider.of<TaskCubit>(context).dueDate!)
-                      .toString()),
+          controller: _buildDateController(),
         ),
       ],
     );
   }
 
-  Widget _buildPrioritySelectorDropdown() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          "Priority",
-          style: TextStyles.font12GrayRegular,
-        ),
-        verticalSpace(10),
-        Container(
-          padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
-          decoration: BoxDecoration(
-            color: ColorsManager.lightPrimryColor,
-            borderRadius: BorderRadius.circular(8.r),
-          ),
-          child: DropdownButtonHideUnderline(
-            child: DropdownButton<String>(
-              value: BlocProvider.of<TaskCubit>(context).selectedPriority,
-              isExpanded: true,
-              icon: Image.asset(
-                'assets/image/arrow_down.png',
-                width: 24.w,
-              ),
-              items: ['low', 'medium', 'high'].map((priority) {
-                return DropdownMenuItem<String>(
-                  value: priority,
-                  child: Row(
-                    children: [
-                      Icon(Icons.flag_outlined,
-                          size: 20.r, color: ColorsManager.primryColor),
-                      horizontalSpace(8),
-                      Text(
-                        "$priority Priority",
-                        style: TextStyles.font16PrimaryBold,
-                      ),
-                    ],
-                  ),
-                );
-              }).toList(),
-              onChanged: (newValue) {
-                if (newValue != null) {
-                  setState(() {
-                    BlocProvider.of<TaskCubit>(context).selectedPriority =
-                        newValue;
-                  });
-                }
-              },
-            ),
-          ),
-        ),
-      ],
+  TextEditingController _buildDateController() {
+    return TextEditingController(
+      text: _taskCubit.dueDate == null
+          ? ''
+          : DateFormat('yyyy - M - d').format(_taskCubit.dueDate!),
     );
   }
 
-  Widget _buildAddTaskBlocLisener() {
+  Widget _buildDatePickerIcon() {
+    return IconButton(
+      icon: Icon(
+        Icons.calendar_month_outlined,
+        size: 24.r,
+        color: ColorsManager.primryColor,
+      ),
+      onPressed: () => _showDatePicker(),
+    );
+  }
+
+  Future<void> _showDatePicker() async {
+    final DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: _taskCubit.dueDate ?? DateTime.now(),
+      firstDate: DateTime(2023),
+      lastDate: DateTime(2100),
+    );
+
+    if (pickedDate != null && pickedDate != _taskCubit.dueDate) {
+      setState(() {
+        _taskCubit.dueDate = pickedDate;
+      });
+    }
+  }
+
+  Widget _buildAddTaskButton() {
+    return AppTextButton(
+      buttonText: "Add Task",
+      textStyle: TextStyles.font19WhiteBold,
+      onPressed: () => _taskCubit.addTaskCubit(),
+    );
+  }
+
+  Widget _buildAddTaskListener() {
     return BlocListener<TaskCubit, TaskState>(
       listenWhen: (previous, current) => previous != current,
       listener: (context, state) {
-        if (state is AddTaskLoading) {
-          const Center(child: CircularProgressIndicator());
-        } else if (state is AddTaskSuccess) {
-          context.pushNamed(Routes.taskDetailsScreen,arguments:state.task );
-        }
-        if (state is AddTaskError) {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            content: Text("Something went wrong. Makes sure your date"),
-          ));
+        if (state is AddTaskSuccess) {
+          context.pushReplacementNamed(Routes.taskDetailsScreen,
+              arguments: state.task);
+        } else if (state is AddTaskError) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content:
+                  Text("Something went wrong. Make sure your date is valid"),
+            ),
+          );
         }
       },
       child: const SizedBox.shrink(),
