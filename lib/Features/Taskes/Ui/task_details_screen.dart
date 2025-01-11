@@ -128,7 +128,7 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
         children: [
           IconButton(
             onPressed: () {
-              context.pushReplacementNamed(Routes.taskesScreen);
+              context.pop();
             },
             icon: Image.asset(
               'assets/image/arrow_to_left.png',

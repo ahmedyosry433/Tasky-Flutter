@@ -57,45 +57,47 @@ class _TaskListScreenState extends State<TaskListScreen> {
     });
   }
 
+  Future<void> _handleRefresh() async {
+    BlocProvider.of<TaskCubit>(context).tasksListCubit(pageNum: 1);
+    setState(() {
+      currentPage = 1;
+      selectedFilter = 0;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    return RefreshIndicator(
-      onRefresh: () async {
-        BlocProvider.of<TaskCubit>(context).tasksListCubit(pageNum: 1);
-
-        _setupScroll();
-        setState(() {
-          currentPage = 1;
-          selectedFilter = 0;
-        });
-      },
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        body: SafeArea(
-          child: Stack(
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildAppbar(),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16.w),
-                    child: Text(
-                      'My Tasks',
-                      style: TextStyles.font16GrayBold,
-                    ),
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: Stack(
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildAppbar(),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16.w),
+                  child: Text(
+                    'My Tasks',
+                    style: TextStyles.font16GrayBold,
                   ),
-                  _buildFilter(),
-                  _buildCardBlocBuilder(),
-                ],
-              ),
-              _buildFloatingActionBtn(),
-              _buildLogoutBlocLisener(context),
-              _buildDeleteBlocLisener(),
-              _buildEditBlocLisener(),
-              _buildQrCodeBlocLisener(),
-            ],
-          ),
+                ),
+                _buildFilter(),
+                Expanded(
+                  child: RefreshIndicator(
+                    onRefresh: _handleRefresh,
+                    child: _buildCardBlocBuilder(),
+                  ),
+                ),
+              ],
+            ),
+            _buildFloatingActionBtn(),
+            _buildLogoutBlocLisener(context),
+            _buildDeleteBlocLisener(),
+            _buildEditBlocLisener(),
+            _buildQrCodeBlocLisener(),
+          ],
         ),
       ),
     );
@@ -369,28 +371,60 @@ class _TaskListScreenState extends State<TaskListScreen> {
         final screenHeight = MediaQuery.of(context).size.height;
         final taskItemHeight = 100.0.h;
         final totalTasksHeight = tasks.length * taskItemHeight;
-
-        return Expanded(
-          child: ListView.builder(
-            controller: _scrollController,
-            padding: EdgeInsets.symmetric(horizontal: 16.w),
-            itemCount: tasks.length + (totalTasksHeight < screenHeight ? 0 : 1),
-            itemBuilder: (context, index) {
-              if (index < tasks.length) {
-                return _buildTaskCard(tasks[index], () {
-                  context.pushNamed(Routes.taskDetailsScreen,
-                      arguments: tasks[index]);
-                });
-              } else if (newTasks.isEmpty) {
-                return const SizedBox.shrink();
-              } else {
-                return Padding(
-                  padding: EdgeInsets.all(16.r),
-                  child: const Center(child: CircularProgressIndicator()),
-                );
-              }
-            },
-          ),
+        return CustomScrollView(
+          controller: _scrollController,
+          physics: const AlwaysScrollableScrollPhysics(),
+          slivers: [
+            SliverPadding(
+              padding: EdgeInsets.symmetric(horizontal: 16.w),
+              sliver: tasks.isEmpty
+                  ? SliverFillRemaining(
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.task_outlined,
+                              size: 64.r,
+                              color: Colors.grey,
+                            ),
+                            verticalSpace(16),
+                            Text(
+                              'No tasks available',
+                              style: TextStyles.font16GrayRegular,
+                            ),
+                            verticalSpace(8),
+                            Text(
+                              'Pull down to refresh',
+                              style: TextStyles.font14GrayRegular,
+                            ),
+                          ],
+                        ),
+                      ),
+                    )
+                  : SliverList(
+                      delegate: SliverChildBuilderDelegate(
+                        (context, index) {
+                          if (index < tasks.length) {
+                            return _buildTaskCard(tasks[index], () {
+                              context.pushNamed(Routes.taskDetailsScreen,
+                                  arguments: tasks[index]);
+                            });
+                          } else if (newTasks.isNotEmpty) {
+                            return Padding(
+                              padding: EdgeInsets.all(16.r),
+                              child: const Center(
+                                  child: CircularProgressIndicator()),
+                            );
+                          }
+                          return null;
+                        },
+                        childCount: tasks.length +
+                            (totalTasksHeight < screenHeight ? 0 : 1),
+                      ),
+                    ),
+            ),
+          ],
         );
       },
     );
