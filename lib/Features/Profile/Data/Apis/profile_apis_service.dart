@@ -5,6 +5,6 @@ class ProfileApisService extends BaseApiService {
   ProfileApisService(super.dio);
 
   Future<dynamic> getProfile() async {
-    return get(ApiConstants.apiBaseUrl + ApiConstants.profilerUrl);
+    return get( ApiConstants.profilerUrl);
   }
 }

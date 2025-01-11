@@ -18,72 +18,24 @@ class BaseApiService {
   BaseApiService(this._dio);
 
   Future<dynamic> get(String endpoint, {Map<String, dynamic>? params}) async {
-    try {
-      final response = await _dio.get(endpoint, queryParameters: params);
-      return response.data;
-    } on DioException catch (e) {
-      if (e.response?.statusCode == 401) {
-        await _refreshToken();
-        return get(endpoint, params: params);
-      }
-      rethrow;
-    }
+    final response = await _dio.get('${ApiConstants.apiBaseUrl}$endpoint', queryParameters: params);
+    return response.data;
   }
 
   Future<dynamic> post(String endpoint, {dynamic data}) async {
-    try {
-      final response = await _dio.post(endpoint, data: data);
-      return response.data;
-    } on DioException catch (e) {
-      if (e.response?.statusCode == 401) {
-        await _refreshToken();
-        return post(endpoint, data: data);
-      }
-      rethrow;
-    }
+    final response = await _dio.post('${ApiConstants.apiBaseUrl}$endpoint', data: data);
+    return response.data;
   }
 
   Future<dynamic> put(String endpoint, {dynamic data}) async {
-    try {
-      final response = await _dio.put(endpoint, data: data);
-      return response.data;
-    } on DioException catch (e) {
-      if (e.response?.statusCode == 401) {
-        await _refreshToken();
-        return put(endpoint, data: data);
-      }
-      rethrow;
-    }
+    final response = await _dio.put('${ApiConstants.apiBaseUrl}$endpoint', data: data);
+    return response.data;
   }
 
   Future<dynamic> delete(String endpoint) async {
-    try {
-      final response = await _dio.delete(endpoint);
-      return response.data;
-    } on DioException catch (e) {
-      if (e.response?.statusCode == 401) {
-        await _refreshToken();
-        return delete(endpoint);
-      }
-      rethrow;
-    }
+    final response = await _dio.delete('${ApiConstants.apiBaseUrl}$endpoint');
+    return response.data;
   }
 
-  Future<String> getRefreshToken() async {
-    return await SharedPreferencesHelper.getSecuredString('reftoken');
-  }
-
-  Future _refreshToken() async {
-    Response response = await _dio.request(
-        "${ApiConstants.apiBaseUrl}${ApiConstants.refreshToken}${await getRefreshToken()}",
-        options: Options(
-          method: 'GET',
-        ));
-    await SharedPreferencesHelper.setSecuredString(
-        "token", "${response.data["access_token"]}");
-
-    DioFactory.setTokenAfterLogin(response.data["access_token"]);
-
-    return response;
-  }
+ 
 }

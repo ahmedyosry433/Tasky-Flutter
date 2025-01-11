@@ -7,34 +7,34 @@ import 'package:tasky/Features/Taskes/Data/Model/task_model.dart';
 class TaskApisService extends BaseApiService {
   TaskApisService(super.dio);
   Future<void> logout() async {
-    return await post(ApiConstants.apiBaseUrl + ApiConstants.logoutrUrl);
+    return await post( ApiConstants.logoutrUrl);
   }
 
   Future tasksList(int pageNum) async {
     return get(
-        "${ApiConstants.apiBaseUrl}${ApiConstants.taskesPaginationUrl}$pageNum");
+        "${ApiConstants.taskesPaginationUrl}$pageNum");
   }
 
   Future<TaskModel> getOneTask(String taskId) async {
     final response = await get(
-        '${ApiConstants.apiBaseUrl}${ApiConstants.taskesrUrl}/$taskId');
+        '${ApiConstants.taskesrUrl}/$taskId');
     return TaskModel.fromJson(response);
   }
 
   Future<void> addTask(AddTaskModel task) async {
-    return await post(ApiConstants.apiBaseUrl + ApiConstants.taskesrUrl,
+    return await post( ApiConstants.taskesrUrl,
         data: task.toJson());
   }
 
   Future<void> editTask(TaskModel task) async {
     return await put(
-        '${ApiConstants.apiBaseUrl}${ApiConstants.taskesrUrl}/${task.id}',
+        '${ApiConstants.taskesrUrl}/${task.id}',
         data: task.toJson());
   }
 
   Future<void> deleteTask(String taskId) async {
     return await delete(
-        '${ApiConstants.apiBaseUrl}${ApiConstants.taskesrUrl}/$taskId');
+        '${ApiConstants.taskesrUrl}/$taskId');
   }
 
   Future<dynamic> uploadImage(String imagePath) async {
@@ -49,7 +49,7 @@ class TaskApisService extends BaseApiService {
       ],
     });
 
-    return post(ApiConstants.apiBaseUrl + ApiConstants.uploadImage,
+    return post(ApiConstants.uploadImage,
         data: formData);
   }
 }

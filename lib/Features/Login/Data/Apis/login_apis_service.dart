@@ -6,7 +6,7 @@ class LoginApisService extends BaseApiService {
   LoginApisService(super.dio);
 
   Future<dynamic> login(LoginModel loginModel) async {
-    return post(ApiConstants.apiBaseUrl + ApiConstants.loginrUrl,
+    return post( ApiConstants.loginrUrl,
         data: loginModel.toJson());
   }
 }

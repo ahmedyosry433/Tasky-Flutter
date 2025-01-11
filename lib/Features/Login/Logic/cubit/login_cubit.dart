@@ -4,6 +4,7 @@ import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 // ignore: depend_on_referenced_packages
 import 'package:meta/meta.dart';
+import 'package:tasky/Core/Helper/constants.dart';
 import 'package:tasky/Core/Helper/shared_preferences_helper.dart';
 import 'package:tasky/Features/Login/Data/Model/login_model.dart';
 import 'package:tasky/Features/Login/Data/Repo/login_repo.dart';
@@ -28,12 +29,10 @@ class LoginCubit extends Cubit<LoginState> {
             phone: phoneController.text, password: passwordController.text),
       );
       await SharedPreferencesHelper.setSecuredString(
-          'token', response["access_token"]);
+          AppConstants.accessToken, response["access_token"]);
 
       await SharedPreferencesHelper.setSecuredString(
-          'reftoken', response["refresh_token"]);
-
-      DioFactory.setTokenAfterLogin(response["access_token"]);
+          AppConstants.refreshToken, response["refresh_token"]);
 
       emit(LoginSuccess());
       phoneController.clear();

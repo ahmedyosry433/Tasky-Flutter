@@ -5,7 +5,7 @@ import 'package:tasky/Features/Register/Data/Model/register_model.dart';
 class RegisterApisService extends BaseApiService {
   RegisterApisService(super.dio);
   Future<dynamic> register(UserModel userModel) async {
-    return post(ApiConstants.apiBaseUrl + ApiConstants.registerUrl,
+    return post( ApiConstants.registerUrl,
         data: userModel.toJson());
   }
 }

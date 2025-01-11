@@ -3,6 +3,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
+import 'package:tasky/Core/Helper/constants.dart';
 import 'package:tasky/Core/Networking/dio_factory.dart';
 import 'package:tasky/Core/Helper/shared_preferences_helper.dart';
 import 'package:tasky/Features/Register/Data/Model/register_model.dart';
@@ -41,10 +42,9 @@ class RegisterCubit extends Cubit<RegisterState> {
               level: selectedExperienceLevel!.toLowerCase()));
 
       await SharedPreferencesHelper.setSecuredString(
-          'token', res['access_token']);
+          AppConstants.accessToken, res['access_token']);
       await SharedPreferencesHelper.setSecuredString(
-          'reftoken', res["refresh_token"]);
-      DioFactory.setTokenAfterLogin(res["access_token"]);
+          AppConstants.refreshToken, res["refresh_token"]);
 
       emit(RegisterSuccess());
     } catch (e) {
