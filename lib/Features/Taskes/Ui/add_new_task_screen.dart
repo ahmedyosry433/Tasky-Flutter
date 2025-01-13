@@ -13,6 +13,7 @@ import 'package:tasky/Core/Helper/spacing.dart';
 import 'package:tasky/Core/Router/routes.dart';
 import 'package:tasky/Core/Theme/colors.dart';
 import 'package:tasky/Core/Theme/style.dart';
+import 'package:tasky/Core/Widgets/app_appbar.dart';
 import 'package:tasky/Core/Widgets/app_text_button.dart';
 import 'package:tasky/Core/Widgets/app_text_form_field.dart';
 import 'package:tasky/Core/Widgets/app_text_form_field_with_hint.dart';
@@ -38,7 +39,10 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: _buildAppBar(),
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(40.h),
+        child: AppAppbar(type: 'add Task', screenTitle: "Add New Task"),
+      ),
       body: SingleChildScrollView(
         padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 25.h),
         child: Column(
@@ -51,30 +55,6 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
             _buildAddTaskListener(),
           ],
         ),
-      ),
-    );
-  }
-
-  PreferredSize _buildAppBar() {
-    return PreferredSize(
-      preferredSize: Size.fromHeight(40.h),
-      child: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        leading: Row(
-          children: [
-            IconButton(
-              onPressed: () => context.pop(),
-              icon: Image.asset(
-                'assets/image/arrow_to_left.png',
-                width: 24.w,
-                height: 24.h,
-              ),
-            ),
-            Text('Add New Task', style: TextStyles.font16BlackBold),
-          ],
-        ),
-        leadingWidth: 200.w,
       ),
     );
   }

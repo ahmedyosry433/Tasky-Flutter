@@ -21,6 +21,7 @@ class TaskCubit extends Cubit<TaskState> {
   String? selectedPriority = 'low';
   File? imagePickedUrl;
   File? addImagePickedUrl;
+  File? editImagePickedUrl;
   File? compressedImagePickedUrl;
   DateTime? dueDate;
 

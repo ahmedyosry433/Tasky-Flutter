@@ -1,11 +1,8 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:qr_code_dart_scan/qr_code_dart_scan.dart';
 import 'package:tasky/Core/Helper/extensions.dart';
 import 'package:tasky/Core/Helper/spacing.dart';
@@ -14,6 +11,7 @@ import 'package:tasky/Core/Router/routes.dart';
 import 'package:tasky/Core/Theme/colors.dart';
 import 'package:tasky/Core/Theme/font_weight_helper.dart';
 import 'package:tasky/Core/Theme/style.dart';
+import 'package:tasky/Core/Widgets/app_appbar.dart';
 import 'package:tasky/Core/Widgets/app_cached_network_image.dart';
 import 'package:tasky/Features/Taskes/Data/Model/task_model.dart';
 import 'package:tasky/Features/Taskes/Logic/cubit/task_cubit.dart';
@@ -75,7 +73,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildAppbar(),
+                AppAppbar(type: "home", screenTitle: ''),
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 16.w),
                   child: Text(
@@ -95,7 +93,6 @@ class _TaskListScreenState extends State<TaskListScreen> {
             _buildFloatingActionBtn(),
             _buildLogoutBlocLisener(context),
             _buildDeleteBlocLisener(),
-            _buildEditBlocLisener(),
             _buildQrCodeBlocLisener(),
           ],
         ),
@@ -202,7 +199,9 @@ class _TaskListScreenState extends State<TaskListScreen> {
                           ),
                           onSelected: (value) {
                             if (value == 'edit') {
-                              showEditDialog(context, task);
+                              context.pushReplacementNamed(
+                                  Routes.editTaskScreen,
+                                  arguments: task);
                             } else if (value == 'delete') {
                               showDialog(
                                 context: context,
@@ -214,8 +213,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
                                     actions: [
                                       TextButton(
                                         onPressed: () {
-                                          dialogContext
-                                              .pop(); // Close the dialog
+                                          dialogContext.pop();
                                         },
                                         child: const Text("Cancel"),
                                       ),
@@ -223,8 +221,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
                                         onPressed: () {
                                           BlocProvider.of<TaskCubit>(context)
                                               .deleteTaskCubit(taskId: task.id);
-                                          dialogContext
-                                              .pop(); // Close the dialog
+                                          dialogContext.pop();
                                         },
                                         child: const Text(
                                           "Delete",
@@ -284,42 +281,6 @@ class _TaskListScreenState extends State<TaskListScreen> {
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildAppbar() {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            'Logo',
-            style: TextStyles.font24BlackBold,
-          ),
-          Row(
-            children: [
-              IconButton(
-                  onPressed: () {
-                    context.pushNamed(Routes.profileScreen);
-                  },
-                  icon: Icon(
-                    Icons.account_circle_outlined,
-                    color: Colors.black,
-                    size: 25.r,
-                  )),
-              horizontalSpace(10),
-              IconButton(
-                onPressed: () {
-                  BlocProvider.of<TaskCubit>(context).logoutCubit();
-                },
-                icon: Icon(Icons.logout,
-                    color: ColorsManager.primryColor, size: 25.r),
-              ),
-            ],
-          ),
-        ],
       ),
     );
   }
@@ -511,137 +472,6 @@ class _TaskListScreenState extends State<TaskListScreen> {
     );
   }
 
-  void showEditDialog(BuildContext context, TaskModel task) {
-    TextEditingController titleController =
-        TextEditingController(text: task.title);
-    TextEditingController descController =
-        TextEditingController(text: task.description);
-    String selectedPriority = task.priority;
-    String selectedStatus = task.status;
-    String imagePath = task.imageUrl;
-
-    showDialog(
-      context: context,
-      builder: (dialogContext) {
-        return AlertDialog(
-          title: const Text("Edit Task"),
-          content: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                SizedBox(
-                  height: 150.h,
-                  width: 150.w,
-                  child: AppCasedNetworkImage(
-                      imageUrl:
-                          "${ApiConstants.apiBaseUrl}${ApiConstants.getImageUrl}$imagePath",
-                      height: 150.h,
-                      width: 150.w,
-                      fit: BoxFit.cover),
-                ),
-                TextButton.icon(
-                  onPressed: () async {
-                    final picker = ImagePicker();
-                    final pickedFile =
-                        await picker.pickImage(source: ImageSource.gallery);
-
-                    if (pickedFile != null) {
-                      setState(() {
-                        imagePath = File(pickedFile.path).path;
-                      });
-                      BlocProvider.of<TaskCubit>(context).uploadImageCubit(
-                          imagePath: File(pickedFile.path), editOrAdd: 'edit');
-                    }
-                  },
-                  icon: const Icon(Icons.image),
-                  label: const Text("Select Image"),
-                ),
-                TextFormField(
-                  controller: titleController,
-                  decoration: const InputDecoration(
-                    labelText: "Title",
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  controller: descController,
-                  decoration: const InputDecoration(
-                    labelText: "Description",
-                    border: OutlineInputBorder(),
-                  ),
-                  maxLines: 3,
-                ),
-                const SizedBox(height: 16),
-                DropdownButtonFormField<String>(
-                  value: selectedPriority.toLowerCase(),
-                  items: ['Low', 'Medium', 'High']
-                      .map((priority) => DropdownMenuItem(
-                            value: priority.toLowerCase(),
-                            child: Text(priority),
-                          ))
-                      .toList(),
-                  onChanged: (value) {
-                    selectedPriority = value!;
-                  },
-                  decoration: const InputDecoration(
-                    labelText: "Priority",
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                DropdownButtonFormField<String>(
-                  value: selectedStatus.toLowerCase(),
-                  items: ['Waiting', 'Inprogress', 'Finished']
-                      .map((status) => DropdownMenuItem(
-                            value: status.toLowerCase(),
-                            child: Text(status),
-                          ))
-                      .toList(),
-                  onChanged: (value) {
-                    selectedStatus = value!;
-                  },
-                  decoration: const InputDecoration(
-                    labelText: "Status",
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(dialogContext),
-              child: const Text("Cancel"),
-            ),
-            TextButton(
-              onPressed: () {
-                BlocProvider.of<TaskCubit>(context).editTaskCubit(
-                  task: TaskModel(
-                      id: task.id,
-                      title: titleController.text,
-                      description: descController.text,
-                      priority: selectedPriority,
-                      imageUrl: BlocProvider.of<TaskCubit>(context)
-                              .editImageUploadedName ??
-                          task.imageUrl,
-                      status: selectedStatus,
-                      userId: task.userId),
-                );
-
-                dialogContext.pop();
-              },
-              child: Text(
-                "Save",
-                style: TextStyles.font14PrimarySemiBold,
-              ),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
   Widget _buildDeleteBlocLisener() {
     return BlocListener<TaskCubit, TaskState>(
       listener: (context, state) {
@@ -665,31 +495,6 @@ class _TaskListScreenState extends State<TaskListScreen> {
       },
       child: const SizedBox.shrink(),
     );
-  }
-
-  Widget _buildEditBlocLisener() {
-    return BlocListener<TaskCubit, TaskState>(
-        listenWhen: (previous, current) => previous != current,
-        listener: (context, state) {
-          if (state is EditTaskLoading) {
-            showDialog(
-              context: context,
-              barrierDismissible: false,
-              builder: (context) {
-                return const Center(child: CircularProgressIndicator());
-              },
-            );
-          } else if (state is EditTaskSuccess) {
-            context.pop();
-            context.pushNamed(Routes.taskDetailsScreen, arguments: state.task);
-          } else if (state is EditTaskError) {
-            context.pop();
-            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-              content: Text("Something went wrong."),
-            ));
-          }
-        },
-        child: const SizedBox.shrink());
   }
 
   void _showScanner() {
