@@ -9,7 +9,6 @@ import 'package:tasky/Core/Helper/shared_preferences_helper.dart';
 import 'package:tasky/Features/Login/Data/Model/login_model.dart';
 import 'package:tasky/Features/Login/Data/Repo/login_repo.dart';
 
-import '../../../../Core/Networking/dio_factory.dart';
 
 part 'login_state.dart';
 

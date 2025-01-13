@@ -4,7 +4,6 @@ import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 import 'package:tasky/Core/Helper/constants.dart';
-import 'package:tasky/Core/Networking/dio_factory.dart';
 import 'package:tasky/Core/Helper/shared_preferences_helper.dart';
 import 'package:tasky/Features/Register/Data/Model/register_model.dart';
 import 'package:tasky/Features/Register/Data/Repo/register_repo.dart';
