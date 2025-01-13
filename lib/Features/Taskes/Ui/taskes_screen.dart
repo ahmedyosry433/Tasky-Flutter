@@ -199,8 +199,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
                           ),
                           onSelected: (value) {
                             if (value == 'edit') {
-                              context.pushReplacementNamed(
-                                  Routes.editTaskScreen,
+                              context.pushNamed(Routes.editTaskScreen,
                                   arguments: task);
                             } else if (value == 'delete') {
                               showDialog(

@@ -9,10 +9,12 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:tasky/Core/Helper/extensions.dart';
 import 'package:tasky/Core/Helper/spacing.dart';
+import 'package:tasky/Core/Networking/api_constants.dart';
 import 'package:tasky/Core/Router/routes.dart';
 import 'package:tasky/Core/Theme/colors.dart';
 import 'package:tasky/Core/Theme/style.dart';
 import 'package:tasky/Core/Widgets/app_appbar.dart';
+import 'package:tasky/Core/Widgets/app_cached_network_image.dart';
 import 'package:tasky/Core/Widgets/app_text_button.dart';
 import 'package:tasky/Core/Widgets/app_text_form_field.dart';
 import 'package:tasky/Core/Widgets/app_text_form_field_with_hint.dart';
@@ -32,11 +34,15 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
   final ImagePicker _picker = ImagePicker();
 
   late final TaskCubit _taskCubit;
+  late TextEditingController titleController;
+  late TextEditingController descController;
 
   @override
   void initState() {
     super.initState();
     _taskCubit = context.read<TaskCubit>();
+    titleController = TextEditingController(text: widget.task.title);
+    descController = TextEditingController(text: widget.task.description);
     selectedStatus = widget.task.status;
     selectedPriority = widget.task.priority;
   }
@@ -46,6 +52,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final String imagePath = widget.task.imageUrl;
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(40.h),
@@ -55,7 +62,19 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
         padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 25.h),
         child: Column(
           children: [
-            _buildSelectedImage(),
+            _taskCubit.editImagePickedUrl != null
+                ? _buildSelectedImage()
+                : SizedBox(
+                    height: 150.h,
+                    width: 150.w,
+                    child: AppCasedNetworkImage(
+                      imageUrl:
+                          "${ApiConstants.apiBaseUrl}${ApiConstants.getImageUrl}$imagePath",
+                      height: 150.h,
+                      width: 150.w,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
             verticalSpace(20),
             _buildImagePicker(),
             verticalSpace(20),
@@ -72,7 +91,6 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
       onTap: () => _showImagePickerDialog(),
       child: Column(
         children: [
-          _buildSelectedImage(),
           _buildImagePickerButton(),
         ],
       ),
@@ -86,18 +104,17 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
           return const Center(child: CircularProgressIndicator());
         }
 
-        if (state is UplaodImageSuccess || state is OneTaskSuccess) {
-          if (_taskCubit.editImagePickedUrl != null) {
-            return Padding(
-              padding: EdgeInsets.only(bottom: 20.h),
-              child: Image.file(
-                _taskCubit.editImagePickedUrl!,
-                fit: BoxFit.cover,
-                width: 150.w,
-                height: 120.h,
-              ),
-            );
-          } else {}
+        if (state is UplaodImageSuccess &&
+            _taskCubit.editImagePickedUrl != null) {
+          return Padding(
+            padding: EdgeInsets.only(bottom: 20.h),
+            child: Image.file(
+              _taskCubit.editImagePickedUrl!,
+              fit: BoxFit.cover,
+              width: 150.w,
+              height: 120.h,
+            ),
+          );
         }
 
         if (state is UplaodImageError) {
@@ -185,11 +202,6 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
   }
 
   Widget _buildEditTaskForm() {
-    TextEditingController titleController =
-        TextEditingController(text: widget.task.title);
-    TextEditingController descController =
-        TextEditingController(text: widget.task.description);
-
     return Form(
         child: Column(
       children: [
@@ -229,12 +241,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
           });
         }),
         verticalSpace(40),
-        _buildEditTaskButton(
-          titleController: titleController,
-          descController: descController,
-          selectedPriority: selectedPriority!,
-          selectedStatus: selectedStatus!,
-        ),
+        _buildEditTaskButton(),
       ],
     ));
   }
@@ -295,12 +302,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
     }).toList();
   }
 
-  Widget _buildEditTaskButton({
-    required TextEditingController titleController,
-    required TextEditingController descController,
-    required String selectedPriority,
-    required String selectedStatus,
-  }) {
+  Widget _buildEditTaskButton() {
     return AppTextButton(
       buttonText: "Edit Task",
       textStyle: TextStyles.font19WhiteBold,
@@ -310,11 +312,11 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
               id: widget.task.id,
               title: titleController.text,
               description: descController.text,
-              priority: selectedPriority,
+              priority: selectedPriority!,
               imageUrl:
                   BlocProvider.of<TaskCubit>(context).editImageUploadedName ??
                       widget.task.imageUrl,
-              status: selectedStatus,
+              status: selectedStatus!,
               userId: widget.task.userId),
         );
       },
@@ -328,7 +330,8 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
           if (state is EditTaskLoading) {
             const Center(child: CircularProgressIndicator());
           } else if (state is EditTaskSuccess) {
-            context.pushNamed(Routes.taskDetailsScreen, arguments: state.task);
+            context.pushReplacementNamed(Routes.taskDetailsScreen,
+                arguments: state.task);
           } else if (state is EditTaskError) {
             ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
               content: Text("Something went wrong."),
