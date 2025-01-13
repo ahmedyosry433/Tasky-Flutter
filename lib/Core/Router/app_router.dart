@@ -12,6 +12,7 @@ import 'package:tasky/Features/Register/Ui/register_screen.dart';
 import 'package:tasky/Features/Taskes/Data/Model/task_model.dart';
 import 'package:tasky/Features/Taskes/Logic/cubit/task_cubit.dart';
 import 'package:tasky/Features/Taskes/Ui/add_new_task_screen.dart';
+import 'package:tasky/Features/Taskes/Ui/edit_task_screen.dart';
 import 'package:tasky/Features/Taskes/Ui/task_details_screen.dart';
 import 'package:tasky/Features/Taskes/Ui/taskes_screen.dart';
 
@@ -64,6 +65,13 @@ class AppRouter {
           builder: (_) => BlocProvider(
             create: (context) => getIt<TaskCubit>(),
             child: const AddTaskScreen(),
+          ),
+        );
+      case Routes.editTaskScreen:
+        return MaterialPageRoute(
+          builder: (_) => BlocProvider(
+            create: (context) => getIt<TaskCubit>(),
+            child: EditTaskScreen(task: argument as TaskModel),
           ),
         );
 
